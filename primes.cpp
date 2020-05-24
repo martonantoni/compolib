@@ -26,11 +26,7 @@ void CalcFactorization(ll x)
 
 }
 
-void Solve()
-{
-}
-
-int Init()
+void InitPrimes()
 {	
 	primes.reserve(100'000);
 	for(int i=2; i<pregen_p_s; ++i)
@@ -44,8 +40,4 @@ int Init()
 			}
 		}
 	}
-
-	int t=1;
-	//RI(t);
-	return t;
 }
