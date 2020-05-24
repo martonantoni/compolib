@@ -1,4 +1,4 @@
-int gcd(int a, int b)
+ll gcd(ll a, ll b)
 {
 	while(b) b ^= a ^= b ^= a %= b;
 	return a;
