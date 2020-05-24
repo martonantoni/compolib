@@ -41,3 +41,24 @@ void InitPrimes()
 		}
 	}
 }
+
+vector<ll> divisors;
+
+void GenerateAllDivisors()      // Call CalcFactorization first!
+{
+    divisors.clear();
+    divisors.emplace_back(1);
+    for (auto f : factorization)
+    {
+        FOR(i, f.second)
+        {
+            int ds = divisors.size();
+            FOR(j, ds)
+            {
+                divisors.emplace_back(divisors[j] * f.first);
+            }
+        }
+    }
+    sort(ALL(divisors));
+    divisors.erase(unique(ALL(divisors)), divisors.end());
+}
