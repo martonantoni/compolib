@@ -45,20 +45,20 @@ void InitPrimes()
 vector<ll> divisors;
 
 void GenerateAllDivisors()      // Call CalcFactorization first!
-{
+{                               // divisors are not ordered!
     divisors.clear();
     divisors.emplace_back(1);
     for (auto f : factorization)
     {
-        FOR(i, f.second)
+        int ds = divisors.size();
+        FOR(j, ds)
         {
-            int ds = divisors.size();
-            FOR(j, ds)
+            ll d = divisors[j];
+            FOR(i, f.second)
             {
-                divisors.emplace_back(divisors[j] * f.first);
+                d *= f.first;
+                divisors.emplace_back(d);
             }
         }
     }
-    sort(ALL(divisors));
-    divisors.erase(unique(ALL(divisors)), divisors.end());
 }
