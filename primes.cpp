@@ -8,7 +8,7 @@ vector<pair<ll, ll>> factorization; // prime, count
 void CalcFactorization(ll x)
 {
 	factorization.clear();
-	for(int i=0;i<(int)primes.size();++i)
+	for(int i=0;is_not_prime[x] && i<(int)primes.size();++i)
 	{
 		again:
 		if(x%primes[i]==0)
