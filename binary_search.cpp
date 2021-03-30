@@ -37,23 +37,23 @@ void TestBinarySearch()
 
 
 template<class P>
-int find_first_where_true(int first, int last, const P& p)
+int find_first_where_true(int begin, int end, const P& p)  // end is not included!
 {
 	for(;;)
 	{
-		if(first==last)
-			return first;
-		int mid = first + (last-first)/2;
+		if(begin==end)
+			return begin;
+		int mid = begin + (end-begin)/2;
 		bool result = p(mid);
 		if(!result)
 		{
 			// for 'mid' it is not true, must be after it
-			first=mid+1;
+			begin=mid+1;
 		}
 		else
 		{
 			// for 'mid' it is true, no use looking for start after it, but it might start at 'mid'.
-			last=mid;
+			end=mid;
 		}
 	}
 }
