@@ -94,36 +94,10 @@ constexpr ll mod = 1'000'000'007;
 
 using cPoint = array<int, 3>;
 using cCube = array<cPoint, 2>;
-using cInstruction = pair<pair<bool,int>, cCube>;
-
-vector<cInstruction> filter(vector<cInstruction>& instructions)
-{
-//     printf("before filter: %d\n", (int)instructions.size()); fflush(stdout);
-    reverse(ALL(instructions));
-    vector<cInstruction> filtered;
-    for (auto& i : instructions)
-    {
-        if (none_of(ALL(filtered), [&i](cInstruction& f)
-            {
-                cCube& ic = i.second;
-                cCube& o = f.second;
-                return ic[0][0] >= o[0][0] && ic[1][0] <= o[1][0] &&
-                    ic[0][1] >= o[0][1] && ic[1][1] <= o[1][1] &&
-                    ic[0][2] >= o[0][2] && ic[1][2] <= o[1][2];
-            }))
-        {
-            filtered.emplace_back(i);
-        }
-    }
-    reverse(ALL(filtered));
-//     printf("after filter: %d\n", (int)filtered.size()); fflush(stdout);
-    return filtered;
-}
-
+using cInstruction = pair<pair<bool, int>, cCube>;
 
 ll groups = 0;
-
-ll allSize=0, innerSize = 0;
+ll allSize = 0, innerSize = 0;
 
 void solve(vector<cInstruction> instructions)
 {
@@ -141,14 +115,11 @@ void solve(vector<cInstruction> instructions)
         allSize += size;
         if (inner)
             innerSize += size;
-
     }
 }
 
 void solve(int d, vector<cInstruction> instructions)
 {
-  //  instructions = filter(instructions);
-
     vector<int> cuts;
     for (auto& i : instructions)
     {
@@ -157,14 +128,12 @@ void solve(int d, vector<cInstruction> instructions)
     }
     sort(ALL(cuts));
     cuts.erase(unique(ALL(cuts)), cuts.end());
-
     unordered_map<int, vector<cInstruction>> nis;
     for (auto& i : instructions)
     {
         auto onoff = i.first;
         cCube cube = i.second;
-//        for (auto c : cuts)
-        for(auto i=lower_bound(ALL(cuts), cube[0][d]);; ++i)
+        for (auto i = lower_bound(ALL(cuts), cube[0][d]);; ++i)
         {
             auto c = *i;
             if (cube[0][d] >= c)
@@ -196,31 +165,24 @@ void solve(int d, vector<cInstruction> instructions)
     }
 }
 
-
 ll Solve()
 {
     RI(n);
     vector<cInstruction> instructions;
-    instructions.reserve(n);
-
     vector<int> cuts[3];
-
     FOR(i, n)
     {
         RI(onoffn);
-        RII(x0, x1); 
-        RII(y0, y1); 
+        RII(x0, x1);
+        RII(y0, y1);
         RII(z0, z1);
         cPoint a = { { (int)x0, (int)y0, (int)z0} };
-        cPoint b = { { (int)x1+1, (int)y1+1, (int)z1+1} };
+        cPoint b = { { (int)x1 + 1, (int)y1 + 1, (int)z1 + 1} };
         cCube c = { a, b };
         pair<bool, int> onoff(onoffn == 1, (int)instructions.size());
-
         instructions.emplace_back(onoff, c);
     }
-
     solve(0, std::move(instructions));
-
     return groups;
 }
 
@@ -238,7 +200,7 @@ int main()
     int t = Init();
     for (int tc = 1; tc <= t; ++tc)
     {
- //       printf("Case #%d: ", tc);
+        //       printf("Case #%d: ", tc);
         ll result = Solve();
         printf("result: %lld\n", result);
 
