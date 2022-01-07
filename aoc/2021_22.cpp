@@ -95,11 +95,11 @@ constexpr ll mod = 1'000'000'007;
 using cPoint = array<int, 3>;
 using cCube = array<cPoint, 2>;
 using cInstruction = pair<pair<bool, int>, cCube>;
+template<int d> void solve(vector<cInstruction> instructions);
 
-ll groups = 0;
 ll allSize = 0, innerSize = 0;
 
-void solve(vector<cInstruction> instructions)
+template<> void solve<3>(vector<cInstruction> instructions)
 {
     auto& last = instructions.back();
     if (last.first.first)
@@ -118,9 +118,10 @@ void solve(vector<cInstruction> instructions)
     }
 }
 
-void solve(int d, vector<cInstruction> instructions)
+template<int d> void solve(vector<cInstruction> instructions)
 {
     vector<int> cuts;
+    cuts.reserve(instructions.size() * 2);
     for (auto& i : instructions)
     {
         cuts.emplace_back(i.second[0][d]);
@@ -129,61 +130,45 @@ void solve(int d, vector<cInstruction> instructions)
     sort(ALL(cuts));
     cuts.erase(unique(ALL(cuts)), cuts.end());
     unordered_map<int, vector<cInstruction>> nis;
+    nis.reserve(instructions.size() * 3); // just a guess, but was a measurable speedup
     for (auto& i : instructions)
     {
-        auto onoff = i.first;
         cCube cube = i.second;
-        for (auto i = lower_bound(ALL(cuts), cube[0][d]);; ++i)
+        for (auto j = lower_bound(ALL(cuts), cube[0][d]);; ++j)
         {
-            auto c = *i;
+            auto c = *j;
             if (cube[0][d] >= c)
                 continue;
             if (cube[1][d] == c)
             {
-                nis[cube[0][d]].emplace_back(onoff, cube);
+                nis[cube[0][d]].emplace_back(i.first, cube);
                 break;
             }
             cCube left = cube;
             left[1][d] = c;
             cube[0][d] = c;
-            nis[left[0][d]].emplace_back(onoff, left);
+            nis[left[0][d]].emplace_back(i.first, left);
         }
     }
-    if (d < 2)
-    {
-        for (auto const& [c, sub_instructions] : nis)
-        {
-            solve(d + 1, std::move(sub_instructions));
-        }
-    }
-    else
-    {
-        for (auto const& [c, sub_instructions] : nis)
-        {
-            solve(std::move(sub_instructions));
-        }
-    }
+    for (auto const& [c, sub_instructions] : nis)
+        solve<d + 1>(std::move(sub_instructions));
 }
 
 ll Solve()
 {
     RI(n);
     vector<cInstruction> instructions;
-    vector<int> cuts[3];
     FOR(i, n)
     {
         RI(onoffn);
         RII(x0, x1);
         RII(y0, y1);
         RII(z0, z1);
-        cPoint a = { { (int)x0, (int)y0, (int)z0} };
-        cPoint b = { { (int)x1 + 1, (int)y1 + 1, (int)z1 + 1} };
-        cCube c = { a, b };
         pair<bool, int> onoff(onoffn == 1, (int)instructions.size());
-        instructions.emplace_back(onoff, c);
+        instructions.emplace_back(onoff, cCube { cPoint{ x0, y0, z0} , cPoint{ x1 + 1, y1 + 1, z1 + 1} });
     }
-    solve(0, std::move(instructions));
-    return groups;
+    solve<0>(std::move(instructions));
+    return 0;
 }
 
 
