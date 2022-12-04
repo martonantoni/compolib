@@ -28,6 +28,23 @@ using namespace std::string_literals;
 using ull = unsigned long long;
 using ll = long long;
 
+using cIntVector = std::vector<ll>;
+
+
+class cStringVector : public std::vector<std::string> // could be in its separate header file, but I don't care.
+{
+public:
+    cStringVector() {}
+    cStringVector(const std::string& SourceString, const std::string& Delimeters, bool EmptyFieldsAllowed = true);
+    void FromString(const std::string& SourceString, const std::string& Delimeters, bool EmptyFieldsAllowed = true);
+    int FindIndex(const std::string& Token, int From = 0) const; // returns -1 if not found
+    cIntVector ToIntVector() const;
+    cStringVector&& operator+(const std::string& ExtraField) const;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
+
 using cPath = std::string;
 #define ThrowLastError(...) DebugBreak()
 #define THROW_DETAILED_EXCEPTION(...) DebugBreak()
@@ -44,6 +61,10 @@ public:
         int IsValid() { return Data != NULL; }
         inline operator std::string() const { return std::string(Data, Length); }
         const char* end() const { return Data + Length; }
+        cStringVector toStringVector(const std::string& Delimeters, bool EmptyFieldsAllowed = true) const
+        {
+            return cStringVector(std::string(Data, Length), Delimeters, EmptyFieldsAllowed);
+        }
     };
     class iterator
     {
@@ -97,18 +118,6 @@ inline const char* end(cFastFileReader::cLine& Line)
 
 //////////////////////////////////////////////////////////////////////////
 
-using cIntVector = std::vector<ll>;
 
-
-class cStringVector : public std::vector<std::string> // could be in its separate header file, but I don't care.
-{
-public:
-    cStringVector() {}
-    cStringVector(const std::string& SourceString, const std::string& Delimeters, bool EmptyFieldsAllowed = true);
-    void FromString(const std::string& SourceString, const std::string& Delimeters, bool EmptyFieldsAllowed = true);
-    int FindIndex(const std::string& Token, int From = 0) const; // returns -1 if not found
-    cIntVector ToIntVector() const;
-    cStringVector&& operator+(const std::string& ExtraField) const;
-};
 
 
