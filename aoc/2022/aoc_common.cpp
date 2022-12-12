@@ -3,6 +3,9 @@
 
 #include "aoc_common.h"
 
+#define ASSERT(x) if(!(x)) __debugbreak()
+
+
 inline int Low32(const __int64 Value)
 {
     return (*(const LARGE_INTEGER*)&Value).LowPart;

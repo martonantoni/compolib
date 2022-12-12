@@ -119,5 +119,110 @@ inline const char* end(cFastFileReader::cLine& Line)
 //////////////////////////////////////////////////////////////////////////
 
 
+struct cPosition
+{
+    int row, col;
+
+    cPosition() = default;
+    constexpr cPosition(int r, int c) : row(r), col(c) {}
+    cPosition(const cPosition& src) : row(src.row), col(src.col) {}
+    bool operator==(const cPosition& other) const
+    {
+        return other.col == col && other.row == row;
+    }
+    bool operator!=(const cPosition& other) const { return !(*this == other); }
+    cPosition& operator+=(const cPosition& p)
+    {
+        row += p.row;
+        col += p.col;
+        return *this;
+    }
+    cPosition operator+(const cPosition& p)
+    {
+        cPosition result = p;
+        result += *this;
+        return result;
+    }
+};
+
+constexpr static cPosition neighbour4Positions[4] =
+{
+    { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 }
+};
+
+constexpr static cPosition neighbour8Positions[8] =
+{
+    { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 },
+    { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }
+};
 
 
+template<class DATA_TYPE>
+struct cImage
+{
+    int w=0, h=0;
+    vector<char> cells;
+    vector<DATA_TYPE> data;
+
+    char& at(const cPosition& pos)
+    {
+        return cells[w * pos.row + pos.col];
+    }
+    DATA_TYPE& data_at(const cPosition& pos)
+    {
+        return data[w * pos.row + pos.col];
+    }
+
+    void load();
+
+    bool isValidPos(const cPosition& pos);
+// [&](cPosition pos)
+    template<class T> void forEach4Neighbour(cPosition pos, const T& f)
+    {
+        for (auto offset : neighbour4Positions)
+        {
+            cPosition neighbourPos = pos + offset;
+            if (isValidPos(neighbourPos))
+            {
+                f(neighbourPos);
+            }
+        }
+    }
+// [&](cPosition pos)
+    template<class T> void forAll(const T& f)
+    {
+        for (int r = 0; r < h; ++r)
+        {
+            for (int c = 0; c < w; ++c)
+            {
+                f(cPosition(r, c));
+            }
+        }
+    }
+};
+
+template<class DATA_TYPE>
+inline bool cImage<DATA_TYPE>::isValidPos(const cPosition& pos)
+{
+    return pos.row >= 0 && pos.row < h&& pos.col >= 0 && pos.col < w;
+}
+
+template<class DATA_TYPE>
+inline void cImage<DATA_TYPE>::load()
+{
+    cFastFileReader in("in.txt");
+    cells.reserve(in.GetFileSize());
+    int size = 0;
+    for (auto line : in)
+    {
+        if (!w)
+            w = line.Length;
+        else
+            ASSERT(w == line.Length);
+        ++h;
+        cells.resize(size + w);
+        memcpy(cells.data() + size, line.Data, w);
+        size += w;
+    }
+    data.resize(cells.size());
+}
