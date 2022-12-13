@@ -209,3 +209,25 @@ cStringVector&& cStringVector::operator+(const std::string& ExtraField) const
     ExtendedVector.push_back(ExtraField);
     return std::move(ExtendedVector);
 }
+
+
+std::string replaceAll(const std::string& original, const std::string& subStringToMatch, const std::string replacement)
+{
+    std::string result;
+    size_t subStringToMatchLength = subStringToMatch.length();
+    for (size_t p = 0;;)
+    {
+        auto i = original.find(subStringToMatch, p);
+        if (i == std::string::npos)
+        {
+            result.insert(result.end(), original.begin() + p, original.end());
+            return result;
+        }
+        else
+        {
+            result.insert(result.end(), original.begin() + p, original.begin() + i);
+        }
+        result += replacement;
+        p = i + subStringToMatchLength;
+    }
+}

@@ -30,7 +30,6 @@ using ll = long long;
 
 using cIntVector = std::vector<ll>;
 
-
 class cStringVector : public std::vector<std::string> // could be in its separate header file, but I don't care.
 {
 public:
@@ -44,6 +43,9 @@ public:
 
 //////////////////////////////////////////////////////////////////////////
 
+std::string replaceAll(const std::string& original, const std::string& subStringToMatch, const std::string replacement);
+
+//////////////////////////////////////////////////////////////////////////
 
 using cPath = std::string;
 #define ThrowLastError(...) DebugBreak()
