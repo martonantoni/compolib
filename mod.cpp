@@ -1,8 +1,12 @@
-template <typename T>
-T modpow(T base, T exp)
+ll mod_substract(ll x, ll y, ll m)
+{
+    return ((x - y) % m) + ((x >= y) ? 0 : m);
+}
+
+ll modpow(ll base, ll exp)
 {
 	base %= mod;
-	T result = 1;
+	ll result = 1;
 	while(exp > 0)
 	{
 		if(exp & 1) result = (result * base) % mod;
