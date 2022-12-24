@@ -28,6 +28,8 @@ using namespace std::string_literals;
 using ull = unsigned long long;
 using ll = long long;
 
+inline ll divRoundUp(ll a, ll b) { return (a + b - 1) / b; }
+
 using cIntVector = std::vector<ll>;
 
 class cStringVector : public std::vector<std::string> // could be in its separate header file, but I don't care.
@@ -67,6 +69,7 @@ public:
         {
             return cStringVector(std::string(Data, Length), Delimeters, EmptyFieldsAllowed);
         }
+        void copyTo(char* dest) { memcpy(dest, Data, Length); }
     };
     class iterator
     {
@@ -127,7 +130,7 @@ struct cPosition
 
     cPosition() = default;
     constexpr cPosition(int r, int c) : row(r), col(c) {}
-    cPosition(const cPosition& src) : row(src.row), col(src.col) {}
+    constexpr cPosition(const cPosition& src) : row(src.row), col(src.col) {}
     bool operator==(const cPosition& other) const
     {
         return other.col == col && other.row == row;
@@ -139,24 +142,41 @@ struct cPosition
         col += p.col;
         return *this;
     }
-    cPosition operator+(const cPosition& p)
-    {
-        cPosition result = p;
-        result += *this;
-        return result;
+    bool isWithinBounds(int w, int h) const {
+        return row >= 0 && row < h&& col >= 0 && col < w;
     }
 };
 
-constexpr static cPosition neighbour4Positions[4] =
+template<> struct hash<cPosition>
 {
-    { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 }
+    size_t operator()(const cPosition& p) const { return (p.row << 16) ^ p.col; };
 };
 
-constexpr static cPosition neighbour8Positions[8] =
+constexpr cPosition operator+(const cPosition& l, const cPosition& r)
 {
+    return { l.row + r.row, l.col + r.col };
+}
+
+constexpr static cPosition direction_N = { -1, 0 };
+constexpr static cPosition direction_S = { 1, 0 };
+constexpr static cPosition direction_E = { 0, 1 };
+constexpr static cPosition direction_W = { 0, -1 };
+
+constexpr static cPosition direction_NE = direction_N + direction_E;
+constexpr static cPosition direction_NW = direction_N + direction_W;
+constexpr static cPosition direction_SE = direction_S + direction_E;
+constexpr static cPosition direction_SW = direction_S + direction_W;
+
+constexpr static array<cPosition,4> neighbour4Positions =
+{ {
+    direction_N, direction_S, direction_W, direction_E
+} };
+
+constexpr static array<cPosition,8> neighbour8Positions =
+{ {
     { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 },
     { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }
-};
+} };
 
 
 template<class DATA_TYPE>

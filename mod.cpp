@@ -1,6 +1,6 @@
 ll mod_substract(ll x, ll y, ll m)
 {
-    return ((x - y) % m) + ((x >= y) ? 0 : m);
+    return (x%m-y%m+m)%m;
 }
 
 ll modpow(ll base, ll exp)
