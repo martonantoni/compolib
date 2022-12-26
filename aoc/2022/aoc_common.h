@@ -97,7 +97,7 @@ public:
     cFastFileReader(const cPath& Path);
     ~cFastFileReader();
 
-    cLine GetNextLine();
+    cLine GetNextLine();   // SKIPS EMPTY LINES!
     __int64 GetFileSize() const { return FileSize; }
     const std::string& GetFileName() const { return FileName; }
     iterator begin() { return { *this, GetNextLine() }; }
@@ -131,20 +131,19 @@ struct cPosition
     cPosition() = default;
     constexpr cPosition(int r, int c) : row(r), col(c) {}
     constexpr cPosition(const cPosition& src) : row(src.row), col(src.col) {}
-    bool operator==(const cPosition& other) const
-    {
-        return other.col == col && other.row == row;
-    }
-    bool operator!=(const cPosition& other) const { return !(*this == other); }
+    auto operator<=>(const cPosition&) const = default;
     cPosition& operator+=(const cPosition& p)
     {
         row += p.row;
         col += p.col;
         return *this;
     }
-    bool isWithinBounds(int w, int h) const {
+    bool isWithinBounds(int w, int h) const 
+    {
         return row >= 0 && row < h&& col >= 0 && col < w;
     }
+    const int& operator[](int i) const { return i == 0 ? row : col; }
+    int& operator[](int i) { return i == 0 ? row : col; }
 };
 
 template<> struct hash<cPosition>
@@ -157,25 +156,24 @@ constexpr cPosition operator+(const cPosition& l, const cPosition& r)
     return { l.row + r.row, l.col + r.col };
 }
 
-constexpr static cPosition direction_N = { -1, 0 };
-constexpr static cPosition direction_S = { 1, 0 };
-constexpr static cPosition direction_E = { 0, 1 };
-constexpr static cPosition direction_W = { 0, -1 };
-
-constexpr static cPosition direction_NE = direction_N + direction_E;
-constexpr static cPosition direction_NW = direction_N + direction_W;
-constexpr static cPosition direction_SE = direction_S + direction_E;
+constexpr static cPosition direction_N = { -1, 0 };                     //         N
+constexpr static cPosition direction_S = { 1, 0 };                      //         ^
+constexpr static cPosition direction_E = { 0, 1 };                      //         |
+constexpr static cPosition direction_W = { 0, -1 };                     //     W <-+-> E
+constexpr static cPosition direction_NE = direction_N + direction_E;    //         |
+constexpr static cPosition direction_NW = direction_N + direction_W;    //         V
+constexpr static cPosition direction_SE = direction_S + direction_E;    //         S
 constexpr static cPosition direction_SW = direction_S + direction_W;
 
-constexpr static array<cPosition,4> neighbour4Positions =
+constexpr static array<cPosition, 4> neighbour4Positions =  // in clockwise order
 { {
-    direction_N, direction_S, direction_W, direction_E
+//     ^  0          >   1       V   2        <  3
+    direction_N, direction_E, direction_S, direction_W
 } };
 
-constexpr static array<cPosition,8> neighbour8Positions =
+constexpr static array<cPosition, 8> neighbour8Positions = // in clockwise order
 { {
-    { 0, 1 }, { 0, -1 }, { 1, 0 }, { -1, 0 },
-    { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 }
+    direction_N, direction_NE, direction_E, direction_SE, direction_S, direction_SW, direction_W, direction_NW
 } };
 
 
