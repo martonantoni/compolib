@@ -95,24 +95,61 @@ constexpr ll mod = 1'000'000'007;
 
 
 
-void Solve(FILE *f)
+char b[100'000];
+
+ull dummy = 0;
+
+void Solve(FILE* f)
 {
-}
+    fscanf(f, "%s", b);
+    int len = (int)strlen(b);
+ }
+
 
 int main()
 {
-    for (const auto& entry : fs::directory_iterator("dinos"))
+    vector<string> tasks;
+    unordered_map<string, string> solutions;
+    for (const auto& entry : fs::directory_iterator("unalmas"))
     {
         if (fs::is_regular_file(entry) && entry.path().extension() == ".txt")
         {
-            printf("\n--------------------------------------------------------\n-=#=- %s -=#=-\n", entry.path().string().c_str());
-            FILE* f = fopen(entry.path().string().c_str(), "r");
-            Solve(f);
-            fclose(f);
+            string file_name = entry.path().string();
+            if (file_name.substr(file_name.length() - 8, 8) == ".out.txt")
+            {
+                FILE* f = fopen(file_name.c_str(), "r");
+                string content(entry.file_size() + 1, 0);
+                fread(content.data(), 1, entry.file_size(), f);
+                fclose(f);
+                file_name.erase(file_name.begin() + file_name.length() - 8, file_name.end());
+                file_name += ".in.txt";
+                solutions[file_name] = content;
+            }
+            else
+            {
+                tasks.emplace_back(file_name);
+            }
         }
     }
+    for (auto& file_name : tasks)
+    {
+        printf("\n--------------------------------------------------------\n-=#=- %s -=#=-\n", file_name.c_str());
+        FILE* f = fopen(file_name.c_str(), "r");
+        Solve(f);
+        auto i = solutions.find(file_name);
+        if (i != solutions.end())
+        {
+            printf("!!! OFFICIAL SOLUTION:\n%s\n", i->second.c_str());
+        }
+        fclose(f);
+        fflush(stdout);
+
+    }
+
+
     return 0;
 }
+
 
 
 
