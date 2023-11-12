@@ -93,16 +93,45 @@ constexpr ll mod = 1'000'000'007;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void Solve(const vector<int>& numbers)
+{
+    int total = 0;
+    for (auto x : numbers)
+    {
+        total += x;
+    }
+    vector<bool> possible(total + 1, false);
+    possible[0] = true;
+    for (auto x : numbers)
+    {
+        for (int i = total - 1; i >= 0; --i)
+        {
+            if (possible[i])
+                possible[i + x] = true;
+        }
+    }
+    for (int i = 0; i < total; ++i)
+    {
+        if (possible[i + total / 2])
+        {
+            printf("total: %d, possible: %d, diff: %d\n", total, i + total / 2, abs((i + total / 2) - (total - (i + total / 2))));
+            break;
+        }
+    }
+}
 
-
-char b[100'000];
-
-ull dummy = 0;
 
 void Solve(FILE* f)
 {
-    fscanf(f, "%s", b);
-    int len = (int)strlen(b);
+    vector<int> ws;
+    for (;;)
+    {
+        int x;
+        if (fscanf(f, "%d", &x) <= 0)
+            break;
+        ws.emplace_back(x);
+    }
+    Solve(ws);
 }
 
 
@@ -110,7 +139,7 @@ int main()
 {
     vector<string> tasks;
     unordered_map<string, string> solutions;
-    for (const auto& entry : fs::directory_iterator("unalmas"))  // <<<<--------------------------------------- folder name
+    for (const auto& entry : fs::directory_iterator("testver"))  // <<<<--------------------------------------- folder name
     {
         if (fs::is_regular_file(entry) && entry.path().extension() == ".txt")
         {
