@@ -177,22 +177,63 @@ vector<cLine> ls;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+const char* ns[9] = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
 void solve()
 {
     ll r = 0;
     for (auto& l : ls)
     {
-        ll x = l.i[0];
-        while (x > 0)
+        auto i = find_if(l.txt.begin(), l.txt.end(), [](auto c) { return c >= '0' && c <= '9'; });
+        int first = *i - '0';
+        int x = 1;
+        size_t best = i - l.txt.begin();
+        for (auto& t : ns)
         {
-            ll f = x / 3 - 2;
-            if (f < 0)
-                break;
-            r += f;
-            x = f;
+            auto k = l.txt.find(t);
+            if (k!=string::npos && k < best)
+            {
+                first = x;
+                best = k;
+                i = l.txt.begin();
+            }
+            ++x;
         }
+        auto j = i;
+        auto lj = i;
+        int last = -1;
+        while (j != l.txt.end())
+        {
+            lj = j;
+            j = find_if(j+1, l.txt.end(), [](auto c) { return c >= '0' && c <= '9'; });
+            if (j != l.txt.end())
+                last = *j - '0';
+        }
+
+        x = 1;
+        best = lj - l.txt.begin();
+        for (auto& t : ns)
+        {
+            auto k = l.txt.rfind(t);
+            if (k != string::npos)
+            {
+                if (k > best)
+                {
+                    last = x;
+                    best = k;
+                }
+            }
+            ++x;
+        }
+
+
+
+        if (last == -1)
+            last = first;
+
+        P("%d\n", first * 10 + last);
+
+        r += first * 10 + last;
     }
     P("%lld", r);
 } 
