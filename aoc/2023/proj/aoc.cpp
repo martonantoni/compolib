@@ -23,10 +23,12 @@
 #include <regex>
 #include <filesystem>
 #include <ctime>
+#include <ranges>
 
 #include "FastFileReader.h"
 
 namespace fs = std::filesystem;
+namespace rng = std::ranges;
 
 #undef max
 #undef min
@@ -178,26 +180,14 @@ vector<cLine> ls;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-
-void solve()
+void solve(bool first)
 {
     ll r = 0;
     for (auto& l : ls)
     {
-        ll x = l.i[0];
-        while (x > 0)
-        {
-            ll f = x / 3 - 2;
-            if (f < 0)
-                break;
-            r += f;
-            x = f;
-        }
     }
-    P("%lld", r);
-} 
-
-
+    P("%lld\n", r);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -207,6 +197,7 @@ int main()
 {
     out = fopen("aoc_out.txt", "w");
 
+    printf("reading input...\n");
     cFastFileReader in("aoc_in.txt");
     for (auto file_line : in)
     {
@@ -221,7 +212,12 @@ int main()
         line.i = line.s.ToIntVector();
     }
 
-    solve();
+    P("<<<<< FIRST PART >>>>>\n\n");
+    printf("solving first part...\n");
+    solve(true);
+    P("\n\n<<<<< SECOND PART >>>>>\n\n");
+    printf("solving second part...\n");
+    solve(false);
 
     fclose(out);
     out = nullptr;

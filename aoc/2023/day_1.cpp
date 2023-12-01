@@ -23,10 +23,12 @@
 #include <regex>
 #include <filesystem>
 #include <ctime>
+#include <ranges>
 
 #include "FastFileReader.h"
 
 namespace fs = std::filesystem;
+namespace rng = std::ranges;
 
 #undef max
 #undef min
@@ -177,68 +179,27 @@ vector<cLine> ls;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const char* ns[9] = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };
 
-void solve()
+vector<const char*> nums { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "_", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",  };
+
+void solve(bool first)
 {
     ll r = 0;
     for (auto& l : ls)
     {
-        auto i = find_if(l.txt.begin(), l.txt.end(), [](auto c) { return c >= '0' && c <= '9'; });
-        int first = *i - '0';
-        int x = 1;
-        size_t best = i - l.txt.begin();
-        for (auto& t : ns)
+        vector<size_t> left_pos, right_pos;
+        for (auto& num : nums | views::take(first?10:20))
         {
-            auto k = l.txt.find(t);
-            if (k!=string::npos && k < best)
-            {
-                first = x;
-                best = k;
-                i = l.txt.begin();
-            }
-            ++x;
+            left_pos.emplace_back(l.txt.find(num));
+            right_pos.emplace_back(l.txt.rfind(num));
         }
-        auto j = i;
-        auto lj = i;
-        int last = -1;
-        while (j != l.txt.end())
-        {
-            lj = j;
-            j = find_if(j+1, l.txt.end(), [](auto c) { return c >= '0' && c <= '9'; });
-            if (j != l.txt.end())
-                last = *j - '0';
-        }
-
-        x = 1;
-        best = lj - l.txt.begin();
-        for (auto& t : ns)
-        {
-            auto k = l.txt.rfind(t);
-            if (k != string::npos)
-            {
-                if (k > best)
-                {
-                    last = x;
-                    best = k;
-                }
-            }
-            ++x;
-        }
-
-
-
-        if (last == -1)
-            last = first;
-
-        P("%d\n", first * 10 + last);
-
-        r += first * 10 + last;
+        auto left = rng::min_element(left_pos, less<>());
+        auto right = rng::max_element(right_pos, less<>(), [](auto x) -> int { return x != string::npos ? (int)x : -1; });
+        r += (left - left_pos.begin()) % 10 * 10;
+        r += (right - right_pos.begin()) % 10;
     }
-    P("%lld", r);
-} 
-
-
+    P("%lld\n", r);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -248,6 +209,7 @@ int main()
 {
     out = fopen("aoc_out.txt", "w");
 
+    printf("reading input...\n");
     cFastFileReader in("aoc_in.txt");
     for (auto file_line : in)
     {
@@ -262,7 +224,12 @@ int main()
         line.i = line.s.ToIntVector();
     }
 
-    solve();
+    P("<<<<< FIRST PART >>>>>\n\n");
+    printf("solving first part...\n");
+    solve(true);
+    P("\n\n<<<<< SECOND PART >>>>>\n\n");
+    printf("solving second part...\n");
+    solve(false);
 
     fclose(out);
     out = nullptr;
