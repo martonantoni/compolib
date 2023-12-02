@@ -103,6 +103,7 @@ struct cLine
     cStringVector s;
     string txt;
     bool is_empty = false;
+    int idx;
 };
 
 extern vector<cLine> ls;

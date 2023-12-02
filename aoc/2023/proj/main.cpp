@@ -81,10 +81,13 @@ int main()
 
     printf("reading input...\n");
     cFastFileReader in("aoc_in.txt");
+    int idx = 0;
     for (auto file_line : in)
     {
         cLine& line = ls.emplace_back();
         line.txt = (string)file_line;
+        line.idx = idx;
+        ++idx;
         if (line.txt.empty())
         {
             line.is_empty = true;
