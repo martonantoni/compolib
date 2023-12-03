@@ -148,11 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="aoc.cpp" />
+    <ClCompile Include="bmp.cpp" />
     <ClCompile Include="FastFileReader.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aoc.h" />
+    <ClInclude Include="bmp.h" />
     <ClInclude Include="FastFileReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
