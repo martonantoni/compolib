@@ -7,7 +7,7 @@ const char* main_delimeters = " ,";
 void solve(bool first)
 {
     ll res = 0;
-    auto img = loadImage(ls); // rng::views::all(ls));
+    auto img = loadImage(ls); 
     cPosition pos;
     unordered_map<cPosition, vector<int>> gears; // for part two
     loop_row(pos, img)
@@ -16,22 +16,22 @@ void solve(bool first)
         {
             bool good = false;
             int v = 0;
-            vector<cPosition> start_ps;
-            while (img.isValidPos(pos) && img.at(pos) >= '0' && img.at(pos) <= '9')
+            unordered_set<cPosition> gear_ps;
+            while (img.isValidPos(pos) && isdigit(img.at(pos)))
             {
                 img.forOffsets(pos, neighbour8Positions,
                     [&](cPosition p)
                     {
                         if (first)
                         {
-                            if (auto ch = img.at(p); ch != '.' && (ch < '0' || ch > '9'))
+                            if (auto ch = img.at(p); ch != '.' && !isdigit(ch))
                                 good = true;
                         }
                         else
                         {
                             if (img.at(p) == '*')
                             {
-                                start_ps.emplace_back(p);
+                                gear_ps.insert(p);
                                 good = true;
                             }
                         }
@@ -45,9 +45,7 @@ void solve(bool first)
                     res += v;
                 else
                 {
-                    rng::sort(start_ps);
-                    start_ps.erase(unique(ALL(start_ps)), start_ps.end());
-                    for (auto& p : start_ps)
+                    for (auto& p : gear_ps)
                         gears[p].emplace_back(v);
                 }
             }
