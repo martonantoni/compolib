@@ -47,7 +47,7 @@ extern FILE* out;
 #define P(...) if(out) fprintf(out, __VA_ARGS__)
 #define D(expression) expression
 #else
-char* crash_please = (char*)42;
+//char* crash_please = (char*)42;
 #define ASSERT(x) 
 #define P(...) if(out) fprintf(out, __VA_ARGS__)
 #define D(expression)
@@ -65,17 +65,15 @@ public:
     {
         auto EndTime = std::chrono::high_resolution_clock::now();
         auto Elapsed = std::chrono::duration_cast<std::chrono::microseconds>(EndTime - mStartTime);
-        P("\n--- Elapsed %llu.%llu ms in %s ---\n", (unsigned long long)Elapsed.count() / 1000, (unsigned long long)Elapsed.count() % 1000, mName);
+        printf("\n--- Elapsed %llu.%llu ms in %s ---\n", (unsigned long long)Elapsed.count() / 1000, (unsigned long long)Elapsed.count() % 1000, mName);
     }
     void waypoint()
     {
         auto EndTime = std::chrono::high_resolution_clock::now();
         auto Elapsed = std::chrono::duration_cast<std::chrono::microseconds>(EndTime - mStartTime);
-        P("+ %llu.%llu ms: ", (unsigned long long)Elapsed.count() / 1000, (unsigned long long)Elapsed.count() % 1000);
+        printf("+ %llu.%llu ms: ", (unsigned long long)Elapsed.count() / 1000, (unsigned long long)Elapsed.count() % 1000);
     }
 };
-
-
 
 using namespace std;
 using namespace std::chrono;

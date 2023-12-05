@@ -65,7 +65,9 @@ cIntVector cStringVector::ToIntVector() const
     cIntVector IntVector;
     IntVector.resize(size());
     for (int i = 0, iend = (int)size(); i != iend; ++i)
-        IntVector[i] = atol((*this)[i].c_str());
+    {
+        IntVector[i] = atoll((*this)[i].c_str());
+    }
     return IntVector;
 }
 
@@ -80,29 +82,41 @@ int main()
     out = fopen("aoc_out.txt", "w");
 
     printf("reading input...\n");
-    cFastFileReader in("aoc_in.txt");
-    int idx = 0;
-    for (auto file_line : in)
     {
-        cLine& line = ls.emplace_back();
-        line.txt = (string)file_line;
-        line.idx = idx;
-        ++idx;
-        if (line.txt.empty())
+        cLogPerformance_Guard perf("input reading & parsing");
+        cFastFileReader in("aoc_in.txt");
+        int idx = 0;
+        for (auto file_line : in)
         {
-            line.is_empty = true;
-            continue;
+            cLine& line = ls.emplace_back();
+            line.txt = (string)file_line;
+            line.idx = idx;
+            ++idx;
+            if (line.txt.empty())
+            {
+                line.is_empty = true;
+                continue;
+            }
+            line.s.FromString(line.txt, main_delimeters);    // <-----------------------------  delimeters
+            line.i = line.s.ToIntVector();
         }
-        line.s.FromString(line.txt, main_delimeters);    // <-----------------------------  delimeters
-        line.i = line.s.ToIntVector();
     }
+    auto orig_lines = ls;
 
     P("<<<<< FIRST PART >>>>>\n\n");
     printf("solving first part...\n");
-    solve(true);
+    {
+        cLogPerformance_Guard perf("first part");
+        solve(true);
+    }
+    fflush(stdout); fflush(out);
     P("\n\n<<<<< SECOND PART >>>>>\n\n");
+    ls = orig_lines;
     printf("solving second part...\n");
-    solve(false);
+    {
+        cLogPerformance_Guard perf("second part");
+        solve(false);
+    }
 
     fclose(out);
     out = nullptr;

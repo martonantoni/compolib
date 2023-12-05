@@ -119,7 +119,7 @@ cFastFileReader::cLine cFastFileReader::GetNextLine()
             char* lineStart = mPosition;
             mPosition = lineEnd + 1; // start of the next line
             int lineLength = static_cast<int>(lineEnd - lineStart);
-            if (lineLength > 1 && lineStart[lineLength - 1] == 0xd)
+            if (lineLength >= 1 && lineStart[lineLength - 1] == 0xd)
                 --lineLength;
             return cLine(lineStart, lineLength);
         }
