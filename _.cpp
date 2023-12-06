@@ -85,7 +85,7 @@ using ll = long long;
 #define RDD(var_name1, var_name2) double var_name1, var_name2; scanf("%lf %lf", &var_name1, &var_name2);
 #define RDDD(var_name1, var_name2, var_name3) double var_name1, var_name2, var_name3; scanf("%lf %lf %lf", &var_name1, &var_name2, &var_name3);
 #define ALL(cont) cont.begin(), cont.end()
-#define FOR(var, max_value) for(decltype(max_value) var=0;var<max_value;++var)
+#define FOR(var, max_value) for(remove_reference<remove_const<decltype(max_value)>::type>::type var=0;var<max_value;++var)
 
 constexpr ll mod = 1'000'000'007;
 

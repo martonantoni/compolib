@@ -81,27 +81,27 @@ int main()
 {
     out = fopen("aoc_out.txt", "w");
 
-    printf("reading input...\n");
-    {
-        cLogPerformance_Guard perf("input reading & parsing");
-        cFastFileReader in("aoc_in.txt");
-        int idx = 0;
-        for (auto file_line : in)
-        {
-            cLine& line = ls.emplace_back();
-            line.txt = (string)file_line;
-            line.idx = idx;
-            ++idx;
-            if (line.txt.empty())
-            {
-                line.is_empty = true;
-                continue;
-            }
-            line.s.FromString(line.txt, main_delimeters);    // <-----------------------------  delimeters
-            line.i = line.s.ToIntVector();
-        }
-    }
-    auto orig_lines = ls;
+//     printf("reading input...\n");
+//     {
+//         cLogPerformance_Guard perf("input reading & parsing");
+//         cFastFileReader in("aoc_in.txt");
+//         int idx = 0;
+//         for (auto file_line : in)
+//         {
+//             cLine& line = ls.emplace_back();
+//             line.txt = (string)file_line;
+//             line.idx = idx;
+//             ++idx;
+//             if (line.txt.empty())
+//             {
+//                 line.is_empty = true;
+//                 continue;
+//             }
+//             line.s.FromString(line.txt, main_delimeters);    // <-----------------------------  delimeters
+//             line.i = line.s.ToIntVector();
+//         }
+//     }
+//     auto orig_lines = ls;
 
     P("<<<<< FIRST PART >>>>>\n\n");
     printf("solving first part...\n");
@@ -109,9 +109,9 @@ int main()
         cLogPerformance_Guard perf("first part");
         solve(true);
     }
-    fflush(stdout); fflush(out);
+//     fflush(stdout); fflush(out);
     P("\n\n<<<<< SECOND PART >>>>>\n\n");
-    ls = orig_lines;
+//     ls = orig_lines;
     printf("solving second part...\n");
     {
         cLogPerformance_Guard perf("second part");
