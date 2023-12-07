@@ -15,27 +15,16 @@ struct cHand
     cHand(ll bet, const string& hand): bet(bet)
     {
         FOR(i, 5)
-        {
             cards[i] = card_order.find(hand[i]);
-        }
-        calcRank(0);
-        if(!isFirstPart)
-        {
-            auto bestRank = rank;
-            for (int i = 0; i < 14; ++i)
-            {
-                calcRank(i);
-                bestRank = max(rank, bestRank);
-            }
-            rank = bestRank;
-        }
-    }
-    void calcRank(int jokerIndex)
-    {
         fill(ALL(rank), 0);
         for (auto c : cards)
-            ++rank[!isFirstPart && c == 0 ? jokerIndex : c];
+            ++rank[c];
+        auto jokers = rank[0];
+        if (!isFirstPart)
+            rank[0] = 0;
         sort(ALL(rank), greater<>());
+        if (!isFirstPart)
+            rank[0] += jokers;
     }
     bool operator<(const cHand& other) const
     {
