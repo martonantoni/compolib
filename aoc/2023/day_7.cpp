@@ -66,7 +66,6 @@ struct cHand
     bool operator<(const cHand& other) const
     {
         return make_tuple(rank, cards) < make_tuple(other.rank, other.cards);
-//        return make_tuple(rank, cards[0], cards[1], cards[2], cards[3], cards[4]) < make_tuple(other.rank, other.cards[0], other.cards[1], other.cards[2], other.cards[3], other.cards[4]);
     }
 };
 
