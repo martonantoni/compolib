@@ -9,59 +9,33 @@ string card_order;
 
 struct cHand
 {
-    ll rank = 0;
-    // high card: 0
-    // one pair: 1
-    // two pairs: 2
-    // three: 3
-    // full: 4
-    // four: 5
-    // five: 6
     ll bet;
-    array<ll,5> cards;
-    cHand(ll bet, string& hand): bet(bet)
+    array<ll, 5> cards;
+    array<ll, 14> rank;
+    cHand(ll bet, const string& hand): bet(bet)
     {
         FOR(i, 5)
         {
             cards[i] = card_order.find(hand[i]);
         }
-        if (isFirstPart)
+        calcRank(0);
+        if(!isFirstPart)
         {
-            rank = calcRank(hand, 0);
-        }
-        else
-        {
-            rank = 0;
+            auto bestRank = rank;
             for (int i = 0; i < 14; ++i)
             {
-                rank = max(calcRank(hand, i), rank);
+                calcRank(i);
+                bestRank = max(rank, bestRank);
             }
+            rank = bestRank;
         }
     }
-    ll calcRank(string& hand, int joker_value)
+    void calcRank(int jokerIndex)
     {
-        unordered_map<ll, ll> card_counts;
-        for (int i = 0; i < 5; ++i)
-        {
-            ++card_counts[(!isFirstPart && hand[i] == 'J') ? joker_value : cards[i]];
-        }
-        vector<ll> len_counts(6, 0);
-        for (auto& [k, count] : card_counts)
-            ++len_counts[count];
-
-        if (len_counts[5] == 1)
-            return 6;
-        if (len_counts[4] == 1)
-            return 5;
-        if (len_counts[3] == 1 && len_counts[2] == 1)
-            return 4;
-        if (len_counts[3] == 1)
-            return 3;
-        if (len_counts[2] == 2)
-            return 2;
-        if (len_counts[2] == 1)
-            return 1;
-        return 0;
+        fill(ALL(rank), 0);
+        for (auto c : cards)
+            ++rank[!isFirstPart && c == 0 ? jokerIndex : c];
+        sort(ALL(rank), greater<>());
     }
     bool operator<(const cHand& other) const
     {
@@ -69,33 +43,14 @@ struct cHand
     }
 };
 
-void solveFirst()
+void solve(bool first)
 {
-    card_order = "23456789TJQKA"s;
+    isFirstPart = first;
+    if(first)
+        card_order = "23456789TJQKA"s;
+    else
+        card_order = "J23456789TQKA"s;
 
-    ll res = 0;
-    vector<cHand> hs; 
-    for (auto& l : ls)
-    {
-        hs.emplace_back(l.i[1], l.s[0]);
-    }
-    sort(ALL(hs));
-    ll i = 1;
-    for (auto& h : hs)
-    {
-        res += i * h.bet;
-        ++i;
-    }
-
-    P("----> Result: %lld\n", res);
-}
-
-
-void solveSecond()
-{
-    card_order = "J23456789TQKA"s;
-
-    ll res = 0;
     vector<cHand> hs;
     for (auto& l : ls)
     {
@@ -103,6 +58,7 @@ void solveSecond()
     }
     sort(ALL(hs));
     ll i = 1;
+    ll res = 0;
     for (auto& h : hs)
     {
         res += i * h.bet;
@@ -112,4 +68,14 @@ void solveSecond()
     P("----> Result: %lld\n", res);
 }
 
+/*
+void solveFirst()
+{
+}
+
+void solveSecond()
+{
+}
+
 void solve(bool first) { isFirstPart = first; first ? solveFirst() : solveSecond(); }
+*/
