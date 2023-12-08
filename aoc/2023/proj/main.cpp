@@ -74,6 +74,7 @@ cIntVector cStringVector::ToIntVector() const
 
 
 vector<cLine> ls;
+bool is_first_part = true;
 
 cLogPerformance_Guard perf_guard("main");
 
@@ -97,7 +98,7 @@ int main()
                 line.is_empty = true;
                 continue;
             }
-            line.s.FromString(line.txt, main_delimeters);    // <-----------------------------  delimeters
+            line.s.FromString(line.txt, main_delimeters, main_allow_empty_fields);    // <-----------------------------  delimeters
             line.i = line.s.ToIntVector();
         }
     }
@@ -112,6 +113,7 @@ int main()
     fflush(stdout); fflush(out);
     P("\n\n<<<<< SECOND PART >>>>>\n\n");
     ls = orig_lines;
+    is_first_part = true;
     printf("solving second part...\n");
     {
         cLogPerformance_Guard perf("second part");

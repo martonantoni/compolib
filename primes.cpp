@@ -5,6 +5,9 @@ vector<ll> primes;
 
 vector<pair<ll, ll>> factorization; // prime, count
 
+// GCD  / LCM ---> gcd.cpp
+// LNKO / LKKT
+
 void CalcFactorization(ll x)
 {
     factorization.clear();
@@ -29,41 +32,6 @@ void CalcFactorization(ll x)
     if (x != 1)
         factorization.emplace_back(x, 1);
 }
-
-ll lkkt(ll a, ll b) // legkisebb kozos tobbszoros, nagyon nem optimalizalt
-{
-    CalcFactorization(a);
-    auto af = move(factorization);
-    CalcFactorization(b);
-    auto bf = move(factorization);
-    ll r = 1;
-    auto cp = [](ll a, ll b)
-    {
-        ll r = 1;
-        for (; b > 0; --b)
-            r *= a;
-        return r;
-    };
-    for (auto f : af)
-    {
-        auto i = find_if(ALL(bf), [p = f.first](auto g) { return g.first == p; });
-        if (i == bf.end())
-        {
-            r *= cp(f.first, f.second);
-        }
-        else
-        {
-            r *= cp(f.first, max(i->second, f.second));
-            bf.erase(i);
-        }
-    }
-    for (auto f : bf)
-    {
-        r *= cp(f.first, f.second);
-    }
-    return r;
-}
-
 
 void InitPrimes()
 {	

@@ -109,5 +109,7 @@ struct cLine
 extern vector<cLine> ls;
 
 extern const char* main_delimeters;
+extern bool main_allow_empty_fields;
+extern bool is_first_part;
 
 void solve(bool first);
