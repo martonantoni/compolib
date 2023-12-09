@@ -11,6 +11,8 @@ void solve(bool first)
     for (auto& l : ls)
     {
         vals.clear();
+        if (!first)
+            rng::reverse(l.i);
         vals.emplace_back(l.i);
         for (;;)
         {
@@ -26,12 +28,9 @@ void solve(bool first)
         }
         for (size_t i = vals.size() - 1; i > 0; --i)
         {
-            if(first)
-                vals[i - 1].emplace_back(vals[i - 1].back() + vals[i].back());
-            else
-                vals[i - 1].insert(vals[i - 1].begin(), vals[i - 1][0] - vals[i].front());
+            vals[i - 1].emplace_back(vals[i - 1].back() + vals[i].back());
         }
-        res += first ? vals[0].back() : vals[0].front();
+        res += vals[0].back();
     }
 
     P("%lld\n", res);
