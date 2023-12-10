@@ -20,6 +20,8 @@ struct cPosition
     }
     const int& operator[](int i) const { return i == 0 ? row : col; }
     int& operator[](int i) { return i == 0 ? row : col; }
+    cPosition operator*(int m) const { return cPosition(row * m, col * m); }
+    cPosition operator-() const { return cPosition(-row, -col); }
 };
 
 template<> struct hash<cPosition>
@@ -63,6 +65,7 @@ struct cImage
     {
         return cells[w * pos.row + pos.col];
     }
+    DATA_TYPE& operator[](const cPosition& pos) { return at(pos); }
 
     bool isValidPos(const cPosition& pos);
     // [&](cPosition pos)
@@ -100,6 +103,7 @@ struct cImage
             }
         }
     }
+    void print();
 };
 
 template<class DATA_TYPE>
@@ -133,3 +137,20 @@ template<class T> inline int _loop_col_helper(cPosition& pos, const cImage<T>& i
 
 #define loop_row(p, ...) for(int row_end = _loop_row_helper(p, __VA_ARGS__);p.row<row_end;++p.row)
 #define loop_col(p, ...) for(int col_end = _loop_col_helper(p, __VA_ARGS__);p.col<col_end;++p.col)
+
+template<class DATA_TYPE>
+void cImage<DATA_TYPE>::print()
+{
+    if constexpr (is_same<DATA_TYPE, char>::value)
+    {
+        cPosition pos;
+        loop_row(pos, *this)
+        {
+            loop_col(pos, *this)
+            {
+                P("%c", at(pos));
+            }
+            P("\n");
+        }
+    }
+}
