@@ -1,6 +1,7 @@
 #include "aoc.h"
 #include "bmp.h"
 
+
 const char* main_delimeters = " ,";
 bool main_allow_empty_fields = false;
 
@@ -8,6 +9,14 @@ void print_vll(vector<ll>& nums)
 {
     for (auto x : nums)
         P("%lld ", x);
+}
+
+void print_f(const string& f)
+{
+    P("         ");
+    for (auto c : f)
+        P("%c ", c);
+    P("\n");
 }
 
 ll process_bf(string& f, vector<ll> ds)
@@ -140,16 +149,45 @@ ll process(string& f, vector<ll> ds)
     return res;
 }
 
+
+
+// idea from https://github.com/dhanak/competitive-coding/blob/master/aoc2023/day12.jl
+ll process_nicer(string& f, vector<ll> ds)   
+{
+    f = "."s + f + "."s;
+//     print_f(f);
+    vector<ll> ways_started_at(f.size() + 1), next(f.size() + 1);
+    ways_started_at[0] = 1;
+    for (auto len : ds)
+    {
+        fill(ALL(next), 0);
+        ll ways_sum = ways_started_at[0];
+        for (int from = 1; from < f.size(); ++from)
+        {
+            ways_sum += ways_started_at[from];
+            if (int to = from + len; f[from - 1] != '#' && to <= f.size() && f[to] != '#' && string_view(f.c_str() + from, len).find('.') == string_view::npos)
+                next[from + len + 1] = ways_sum;
+            if (f[from] == '#')
+                ways_sum = 0;
+        }
+//         P("%lld -----> ", len);
+//         print_vll(next);
+//         P("\n");
+        swap(next, ways_started_at);
+    }
+    ll res = 0;
+    for (size_t i = f.size(); i > 0 && f[i] != '#'; --i)
+        res += ways_started_at[i];
+    return res;
+}
+
 void solve(bool first)
 {
     ll res = 0;
-
-
     for (auto& l : ls)
     {
         string& field = l.s[0];
         l.i.erase(l.i.begin());
-
         if (!first)
         {
             field = field + "?" + field + "?" + field + "?" + field + "?" + field;
@@ -159,12 +197,8 @@ void solve(bool first)
             l.i.insert(l.i.end(), ALL(x));
             l.i.insert(l.i.end(), ALL(x));
         }
-
-        res += process(field, l.i);
+        res += process_nicer(field, l.i);
     }
-
-
-
     P("%lld\n", res);
 }
 
