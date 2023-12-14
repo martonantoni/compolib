@@ -151,11 +151,13 @@
     <ClCompile Include="bmp.cpp" />
     <ClCompile Include="FastFileReader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="aoc.h" />
     <ClInclude Include="bmp.h" />
     <ClInclude Include="FastFileReader.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -65,7 +65,7 @@ public:
     {
         auto EndTime = std::chrono::high_resolution_clock::now();
         auto Elapsed = std::chrono::duration_cast<std::chrono::microseconds>(EndTime - mStartTime);
-        printf("\n--- Elapsed %llu.%llu ms in %s ---\n", (unsigned long long)Elapsed.count() / 1000, (unsigned long long)Elapsed.count() % 1000, mName);
+        printf("\n--- Elapsed %llu.%llu ms in %s ---\n\n", (unsigned long long)Elapsed.count() / 1000, (unsigned long long)Elapsed.count() % 1000, mName);
     }
     void waypoint()
     {
