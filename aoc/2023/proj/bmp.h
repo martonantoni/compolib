@@ -125,8 +125,16 @@ inline bool cImage<DATA_TYPE>::isValidPos(const cPosition& pos)
 inline cImage<char> loadImage(auto lines)
 {
     cImage<char> image;
-    image.w = (int)lines[0].txt.size();
-    image.h = (int)lines.size();
+    if (lines.empty())
+    {
+        image.w = 0;
+        image.h = 0;
+    }
+    else
+    {
+        image.w = (int)lines[0].txt.size();
+        image.h = (int)lines.size();
+    }
     int size = image.w * image.h;
     image.cells.resize(size);
     int p = 0;

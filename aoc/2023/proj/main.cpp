@@ -107,12 +107,15 @@ void solvePart()
 {
     const char* part_name = is_first_part ? "FIRST" : "SECOND";
     P("\n\n<<<<< %s PART >>>>>\n\n", part_name);
-    print_prefix = "EXAMPLE     ";
-    printf("solving %s part... example\n", part_name);
-    ls = orig_example_lines;
-    solve(is_first_part);
-    print_prefix = "";
-    P("\n");
+    if (!orig_example_lines.empty())
+    {
+        print_prefix = "EXAMPLE     ";
+        printf("solving %s part... example\n", part_name);
+        ls = orig_example_lines;
+        solve(is_first_part);
+        print_prefix = "";
+        P("\n");
+    }
     printf("solving %s part...\n", part_name);
     ls = orig_lines;
     {
