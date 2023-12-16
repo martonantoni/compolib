@@ -10,5 +10,4 @@ struct cPattern
     ll operator[](ll index0) const;
 };
 
-
-
+void print_vll(const vector<ll>& nums);

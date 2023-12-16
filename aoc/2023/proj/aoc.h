@@ -42,14 +42,14 @@ namespace rng = std::ranges;
 
 extern FILE* out;
 
+#define P(...) do { if(out) { fprintf(out, "%s", print_prefix); fprintf(out, __VA_ARGS__); } } while(false)
+
 #ifdef _DEBUG
 #define ASSERT(x) if(!(x)) __debugbreak()
-#define P(...) if(out) fprintf(out, __VA_ARGS__)
 #define D(expression) expression
 #else
 //char* crash_please = (char*)42;
 #define ASSERT(x) 
-#define P(...) if(out) fprintf(out, __VA_ARGS__)
 #define D(expression)
 #endif
 
@@ -111,5 +111,6 @@ extern vector<cLine> ls;
 extern const char* main_delimeters;
 extern bool main_allow_empty_fields;
 extern bool is_first_part;
+extern const char* print_prefix;
 
 void solve(bool first);

@@ -19,3 +19,9 @@ ll cPattern::operator[](ll index0) const
         return nums[index0];
     return nums[(index0 - lead_length) % period + lead_length];
 }
+
+void print_vll(const vector<ll>& nums)
+{
+    for (auto x : nums)
+        P("%lld ", x);
+}

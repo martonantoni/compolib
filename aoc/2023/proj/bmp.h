@@ -107,6 +107,13 @@ struct cImage
             }
         }
     }
+    template<class U>
+    void initSize(const cImage<U>& other)
+    {
+        cells.resize(other.cells.size());
+        w = other.w;
+        h = other.h;
+    }
 };
 
 template<class DATA_TYPE>

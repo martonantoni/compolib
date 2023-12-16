@@ -78,47 +78,67 @@ bool is_first_part = true;
 
 cLogPerformance_Guard perf_guard("main");
 
+vector<cLine> readFile(const char* fileName)
+{
+    cFastFileReader in(fileName);
+    vector<cLine> lines;
+    int idx = 0;
+    for (auto file_line : in)
+    {
+        cLine& line = lines.emplace_back();
+        line.txt = (string)file_line;
+        line.idx = idx;
+        ++idx;
+        if (line.txt.empty())
+        {
+            line.is_empty = true;
+            continue;
+        }
+        line.s.FromString(line.txt, main_delimeters, main_allow_empty_fields);    // <-----------------------------  delimeters
+        line.i = line.s.ToIntVector();
+    }
+    return lines;
+}
+
+const char* print_prefix = "";
+vector<cLine> orig_example_lines, orig_lines;
+
+void solvePart()
+{
+    const char* part_name = is_first_part ? "FIRST" : "SECOND";
+    P("\n\n<<<<< %s PART >>>>>\n\n", part_name);
+    print_prefix = "EXAMPLE     ";
+    printf("solving %s part... example\n", part_name);
+    ls = orig_example_lines;
+    solve(is_first_part);
+    print_prefix = "";
+    P("\n");
+    printf("solving %s part...\n", part_name);
+    ls = orig_lines;
+    {
+        cLogPerformance_Guard perf(part_name);
+        solve(is_first_part);
+    }
+    fflush(stdout); fflush(out);
+}
+
 int main()
 {
     out = fopen("aoc_out.txt", "w");
 
+    printf("Reading example input...\n");
+    orig_example_lines = readFile("aoc_example_in.txt");
     printf("reading input...\n");
     {
         cLogPerformance_Guard perf("input reading & parsing");
+        orig_lines = readFile("aoc_in.txt");
         cFastFileReader in("aoc_in.txt");
-        int idx = 0;
-        for (auto file_line : in)
-        {
-            cLine& line = ls.emplace_back();
-            line.txt = (string)file_line;
-            line.idx = idx;
-            ++idx;
-            if (line.txt.empty())
-            {
-                line.is_empty = true;
-                continue;
-            }
-            line.s.FromString(line.txt, main_delimeters, main_allow_empty_fields);    // <-----------------------------  delimeters
-            line.i = line.s.ToIntVector();
-        }
     }
-    auto orig_lines = ls;
 
-    P("<<<<< FIRST PART >>>>>\n\n");
-    printf("solving first part...\n");
-    {
-        cLogPerformance_Guard perf("first part");
-        solve(true);
-    }
-    fflush(stdout); fflush(out);
-    P("\n\n<<<<< SECOND PART >>>>>\n\n");
-    ls = orig_lines;
     is_first_part = true;
-    printf("solving second part...\n");
-    {
-        cLogPerformance_Guard perf("second part");
-        solve(false);
-    }
+    solvePart();
+    is_first_part = false;
+    solvePart();
 
     fclose(out);
     out = nullptr;
