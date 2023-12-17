@@ -11,6 +11,7 @@ void solve(bool first)
     int max_steps = first ? 3 : 10;
     cImage<char> img = loadImage(ls);
     img -= '0';
+    vector<int> alma;
     cImage<unordered_map<int, bool>> visited(img);
     min_heap<tuple<ll, cPosition, cPosition, int>> f;  // cost, pos, dir, steps
     f.emplace(0, cPosition{ 0,0 }, direction_NE, min_steps);
@@ -23,22 +24,20 @@ void solve(bool first)
             P("best: %lld\n", cost);
             return;
         }
-        int diri = 0;
-        for (auto& next_dir : neighbour4Positions)
+        for (auto [dir_idx, next_dir] : views::enumerate(neighbour4Positions))
         {
             cPosition next_pos = pos + next_dir;
             if (img.isValidPos(next_pos) && (next_dir == dir || steps >= min_steps) && next_dir != -dir && (next_dir != dir || steps < max_steps))
             {                
                 int next_steps = next_dir == dir ? steps + 1 : 1;
-                if (auto& v = visited[next_pos][next_steps * 4 + diri]; !v)
+                if (auto& v = visited[next_pos][next_steps * 4 + dir_idx]; !v)
                 {
                     v = true;
                     f.emplace(cost + img[next_pos], next_pos, next_dir, next_steps);
                 }
             }
-            ++diri;
         }
-    }
+    } 
 }
 
 // void solveSecond()

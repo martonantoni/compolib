@@ -47,7 +47,7 @@ constexpr static array<cPosition, 4> neighbour4Positions =  // in clockwise orde
 { {
         //     ^  0          >   1       V   2        <  3
             direction_N, direction_E, direction_S, direction_W
-        } };
+} };
 
 constexpr static array<cPosition, 8> neighbour8Positions = // in clockwise order
 { {
@@ -65,6 +65,12 @@ struct cImage
     template<class U> cImage(const cImage<U>& base, const DATA_TYPE& init_value)
     {
         cells.resize(base.cells.size(), init_value);
+        w = base.w;
+        h = base.h;
+    }
+    template<class U> cImage(const cImage<U>& base)
+    {
+        cells.resize(base.cells.size());
         w = base.w;
         h = base.h;
     }
