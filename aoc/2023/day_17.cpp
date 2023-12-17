@@ -7,24 +7,18 @@ bool main_allow_empty_fields = false;
 
 void solve(bool first)
 {
-    ll res = 0;
-
     int min_steps = first ? 0 : 4;
     int max_steps = first ? 3 : 10;
-
     cImage<char> img = loadImage(ls);
+    img -= '0';
     vector<cImage<char>> visited((max_steps + 1) * 4);
     for(auto& v: visited)
     {
         v.initSize(img);
         fill(ALL(v.cells), '.');
     }
-    for (auto& c : img.cells)
-        c -= '0';
-
     min_heap<tuple<ll, cPosition, cPosition, int>> f;  // cost, pos, dir, steps
     f.emplace(0, cPosition{ 0,0 }, direction_NE, min_steps);
-
     while (!f.empty())
     {
         auto [cost, pos, dir, steps] = f.top();
@@ -34,7 +28,6 @@ void solve(bool first)
             P("best: %lld\n", cost);
             return;
         }
-
         int diri = 0;
         for (auto& next_dir : neighbour4Positions)
         {

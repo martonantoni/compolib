@@ -61,6 +61,15 @@ struct cImage
     int w = 0, h = 0;
     vector<DATA_TYPE> cells;
 
+    cImage() = default;
+    template<class U> cImage(const cImage<U>& base, const DATA_TYPE& init_value)
+    {
+        cells.resize(base.cells.size(), init_value);
+        w = base.w;
+        h = base.h;
+    }
+
+
     DATA_TYPE& at(const cPosition& pos)
     {
         return cells[w * pos.row + pos.col];
@@ -114,6 +123,17 @@ struct cImage
         cells.resize(other.cells.size());
         w = other.w;
         h = other.h;
+    }
+
+    template<class U> cImage& operator-=(const U& x) 
+    {
+        for (auto& c : cells) c -= x;
+        return *this;
+    }
+    template<class U> cImage& operator+=(const U& x)
+    {
+        for (auto& c : cells) c += x;
+        return *this;
     }
 };
 
