@@ -11,12 +11,7 @@ void solve(bool first)
     int max_steps = first ? 3 : 10;
     cImage<char> img = loadImage(ls);
     img -= '0';
-    vector<cImage<char>> visited((max_steps + 1) * 4);
-    for(auto& v: visited)
-    {
-        v.initSize(img);
-        fill(ALL(v.cells), '.');
-    }
+    cImage<unordered_map<int, bool>> visited(img);
     min_heap<tuple<ll, cPosition, cPosition, int>> f;  // cost, pos, dir, steps
     f.emplace(0, cPosition{ 0,0 }, direction_NE, min_steps);
     while (!f.empty())
@@ -31,18 +26,14 @@ void solve(bool first)
         int diri = 0;
         for (auto& next_dir : neighbour4Positions)
         {
-            if (next_dir == dir || steps >= min_steps)
-            {
-                if (next_dir != -dir && (next_dir != dir || steps < max_steps))
+            cPosition next_pos = pos + next_dir;
+            if (img.isValidPos(next_pos) && (next_dir == dir || steps >= min_steps) && next_dir != -dir && (next_dir != dir || steps < max_steps))
+            {                
+                int next_steps = next_dir == dir ? steps + 1 : 1;
+                if (auto& v = visited[next_pos][next_steps * 4 + diri]; !v)
                 {
-                    cPosition next_pos = pos + next_dir;
-                    int next_steps = next_dir == dir ? steps + 1 : 1;
-                    int vsi = next_steps * 4 + diri;
-                    if (img.isValidPos(next_pos) && visited[vsi][next_pos] == '.')
-                    {
-                        visited[vsi][next_pos] = '#';
-                        f.emplace(cost + img[next_pos], next_pos, next_dir, next_steps);
-                    }
+                    v = true;
+                    f.emplace(cost + img[next_pos], next_pos, next_dir, next_steps);
                 }
             }
             ++diri;
