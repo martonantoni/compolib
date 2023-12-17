@@ -70,6 +70,7 @@ struct cImage
         return isValidPos(pos) ? at(pos) : default_value;
     }
     DATA_TYPE& operator[](const cPosition& pos) { return at(pos); }
+    cPosition bottomRight() const { return cPosition{ h - 1, w - 1 }; }
 
     bool isValidPos(const cPosition& pos);
     // [&](cPosition pos)
@@ -132,8 +133,8 @@ inline cImage<char> loadImage(auto lines)
     }
     else
     {
-        image.w = (int)lines[0].txt.size();
-        image.h = (int)lines.size();
+        image.w = static_cast<int>(lines[0].txt.size());
+        image.h = static_cast<int>(lines.size());
     }
     int size = image.w * image.h;
     image.cells.resize(size);

@@ -15,6 +15,7 @@
 #include <functional>
 #include <cstring>
 #include <deque>
+#include <queue>
 #include <array>
 #include <map>
 #include <random>
@@ -31,6 +32,7 @@
 
 namespace fs = std::filesystem;
 namespace rng = std::ranges;
+
 
 #undef max
 #undef min
@@ -81,6 +83,9 @@ using namespace std::string_literals;
 using ull = unsigned long long;
 using ll = long long;
 using cIntVector = vector<ll>;
+
+template<class T> using min_heap = priority_queue<T, vector<T>, greater<T>>;
+template<class T> using max_heap = priority_queue<T>;
 
 #define ALL(cont) cont.begin(), cont.end()
 #define FOR(var, max_value) for(remove_reference<remove_const<decltype(max_value)>::type>::type var=0;var<max_value;++var)
