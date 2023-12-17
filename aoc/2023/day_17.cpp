@@ -12,11 +12,12 @@ struct cPos
     int steps;
     ll cost;
 
-    cPos(cPosition p, cPosition d, int steps, int cost) :
+    cPos(cPosition p, cPosition d, int steps, ll cost) :
         p(p), d(d), steps(steps), cost(cost) {}
 
-    bool operator<(const cPos& other) const {
-        return cost > other.cost;
+    auto operator<=>(const cPos& other) const
+    {
+        return cost <=> other.cost;
     }
 };
 
@@ -25,10 +26,10 @@ void solve(bool first)
     ll res = 0;
 
     int min_steps = first ? 0 : 4;
-    int max_steps = first? 3 : 10;
+    int max_steps = first ? 3 : 10;
 
     cImage<char> img = loadImage(ls);
-    vector<cImage<char>> visited(min_steps*max_steps + 20);
+    vector<cImage<char>> visited((max_steps + 1) * 4);
     for(auto& v: visited)
     {
         v.initSize(img);
@@ -38,13 +39,13 @@ void solve(bool first)
         c -= '0';
 
     vector<cPos> f;
-    f.emplace_back(cPosition{ 0,0 }, cPosition{ 1,1 }, min_steps, 0);
+    f.emplace_back(cPosition{ 0,0 }, direction_NE, min_steps, 0);
     cPosition target_pos{ img.h - 1, img.w - 1 };
 
     while (!f.empty())
     {
         auto p = f.front();
-        pop_heap(ALL(f), [](auto& l, auto& r) { return l < r; });
+        pop_heap(ALL(f), greater<>());
         f.pop_back();
         if (p.p == target_pos && p.steps >= min_steps)
         {
@@ -67,7 +68,7 @@ void solve(bool first)
                         visited[vsi][next_pos] = '#';
                         cPos np(next_pos, next_dir, next_steps, p.cost + img[next_pos]);
                         f.emplace_back(np);
-                        push_heap(ALL(f), [](auto& l, auto& r) { return l < r; });
+                        push_heap(ALL(f), greater<>());
                     }
                 }
             }
