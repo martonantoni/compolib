@@ -2,10 +2,10 @@
 
 struct cPosition
 {
-    int row, col;
+    ll row, col;
 
     cPosition() = default;
-    constexpr cPosition(int r, int c) : row(r), col(c) {}
+    constexpr cPosition(ll r, ll c) : row(r), col(c) {}
     constexpr cPosition(const cPosition& src) : row(src.row), col(src.col) {}
     auto operator<=>(const cPosition&) const = default;
     cPosition& operator+=(const cPosition& p)
@@ -14,13 +14,13 @@ struct cPosition
         col += p.col;
         return *this;
     }
-    bool isWithinBounds(int w, int h) const
+    bool isWithinBounds(ll w, ll h) const
     {
         return row >= 0 && row < h&& col >= 0 && col < w;
     }
-    const int& operator[](int i) const { return i == 0 ? row : col; }
-    int& operator[](int i) { return i == 0 ? row : col; }
-    cPosition operator*(int m) const { return cPosition(row * m, col * m); }
+    const ll& operator[](ll i) const { return i == 0 ? row : col; }
+    ll& operator[](ll i) { return i == 0 ? row : col; }
+    cPosition operator*(ll m) const { return cPosition(row * m, col * m); }
     cPosition operator-() const { return cPosition(-row, -col); }
 };
 
@@ -33,6 +33,8 @@ constexpr cPosition operator+(const cPosition& l, const cPosition& r)
 {
     return { l.row + r.row, l.col + r.col };
 }
+
+ll polygonArea(const vector<cPosition>& points);
 
 constexpr static cPosition direction_N = { -1, 0 };                     //         N
 constexpr static cPosition direction_S = { 1, 0 };                      //         ^
@@ -86,6 +88,7 @@ struct cImage
     }
     DATA_TYPE& operator[](const cPosition& pos) { return at(pos); }
     cPosition bottomRight() const { return cPosition{ h - 1, w - 1 }; }
+    cPosition middle() const { return cPosition{ h / 2, w / 2 }; }
 
     bool isValidPos(const cPosition& pos);
     // [&](cPosition pos)
@@ -174,6 +177,7 @@ inline cImage<char> loadImage(auto lines)
 }
 
 void printImage(cImage<char>& img);
+void floodFillImage(cImage<char>& img, cPosition startPos, char fillChar, char borderChar);
 
 inline int _loop_row_helper(cPosition& pos, const pair<int, int>& p) { pos.row = p.first; return p.second; }
 inline int _loop_row_helper(cPosition& pos, int from, int to) { pos.row = from; return to; }

@@ -32,6 +32,7 @@
 
 namespace fs = std::filesystem;
 namespace rng = std::ranges;
+namespace vs = std::views;
 
 
 #undef max

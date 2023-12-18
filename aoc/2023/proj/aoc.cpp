@@ -2,112 +2,57 @@
 #include "bmp.h"
 #include "utils.h"
 
-const char* main_delimeters = " ,";
+const char* main_delimeters = " ,()#";
 bool main_allow_empty_fields = false;
 
-ll calc(cImage<char>& img, cPosition start_pos, int start_dir)
+void solveFirst()
 {
-    vector<pair<cPosition, int>> rays; // pos, dir
-    rays.emplace_back(start_pos, start_dir);
-    cImage<unsigned int> energy;
-    energy.initSize(img);
-    fill(ALL(energy.cells), 0);
-
-    while (!rays.empty())
+    cImage<char> img;
+    img.w = 1000;
+    img.h = 1000;
+    img.cells.resize(img.w * img.h, '.');
+    cPosition pos = img.middle();
+    img[pos] = '#';
+    cPosition dm[256];
+    dm['U'] = direction_N;
+    dm['D'] = direction_S;
+    dm['L'] = direction_W;
+    dm['R'] = direction_E;
+    for (auto& l : ls)
     {
-        auto [ray_pos, ray_dir] = rays.back();
-        rays.pop_back();
-        if (energy[ray_pos] & (1 << ray_dir))
+        cPosition d = dm[l.s[0][0]];
+        for(int i: vs::iota(0, l.i[1]))
         {
-            continue;
-        }
-        energy[ray_pos] |= 1 << ray_dir;
-
-        auto step = [&rays, &img](cPosition pos, int dir)
-        {
-            pos += neighbour4Positions[dir];
-            if (img.isValidPos(pos))
-            {
-                rays.emplace_back(pos, dir);
-            }
-        };
-
-        switch (img[ray_pos])
-        {
-        case '.':
-            step(ray_pos, ray_dir);
-            break;
-        case '|':
-            if (ray_dir == 0 || ray_dir == 2)
-            {
-                step(ray_pos, ray_dir);
-            }
-            else
-            {
-                step(ray_pos, 0);
-                step(ray_pos, 2);
-            }
-            break;
-        case '-':
-            if (ray_dir == 1 || ray_dir == 3)
-            {
-                step(ray_pos, ray_dir);
-            }
-            else
-            {
-                step(ray_pos, 3);
-                step(ray_pos, 1);
-            }
-            break;
-        case '/':
-        {
-            int nd[4] = { 1, 0, 3, 2 };
-            step(ray_pos, nd[ray_dir]);
-            break;
-        }
-        case '\\':
-        {
-            int nd[4] = { 3, 2, 1, 0 };
-            step(ray_pos, nd[ray_dir]);
-            break;
-        }
+            pos += d;
+            img[pos] = '#';
         }
     }
+    floodFillImage(img, { 0,0 }, 'x', '#');
 
-    return count_if(ALL(energy.cells), [](auto e) { return e > 0; });
-
+    P("result: %lld\n", count(ALL(img.cells), '#') + count(ALL(img.cells), '.'));
 }
 
-void solve(bool first)
+/*
+Each hexadecimal code is six hexadecimal digits long. The first five hexadecimal digits encode the distance in meters
+as a five-digit hexadecimal number. The last hexadecimal digit encodes the direction to dig: 
+0 means R, 1 means D, 2 means L, and 3 means U.
+*/
+
+void solveSecond()
 {
-    cImage<char> img = loadImage(ls);
-    if (first)
+    vector<cPosition> cs;
+    cPosition position { 0, 0 };
+    array<cPosition, 4> dirs = { direction_E, direction_S, direction_W, direction_N };
+    ll lineArea = 0;
+    for (auto& l : ls)
     {
-        P("result: %lld\n", calc(img, cPosition{ 0, 0 }, 1));
-        return;
+        cPosition dir = dirs[l.s[2][5] - '0'];
+        ll len = stol(l.s[2].substr(0, 5), nullptr, 16); ;
+        position += dir * len;
+        lineArea += len;
+        cs.emplace_back(position);
     }
-    ll best = 0;
-    FOR(row, img.h)
-    {
-        FOR(d, 4)
-        {
-            best = max(best, calc(img, cPosition{ row, 0 }, d));
-            best = max(best, calc(img, cPosition{ row, img.w - 1 }, d));
-        }
-    }
-    FOR(col, img.w)
-    {
-        FOR(d, 4)
-        {
-            best = max(best, calc(img, cPosition{ 0, col }, d));
-            best = max(best, calc(img, cPosition{ img.h - 1, col }, d));
-        }
-    }
-    P("best: %lld\n", best);
+    P("result: %lld\n", polygonArea(cs) + lineArea / 2ll + 1ll);
 }
 
-// void solveSecond()
-// {
-// }
-
-// void solve(bool first) { first ? solveFirst() : solveSecond(); }
+ void solve(bool first) { first ? solveFirst() : solveSecond(); }
