@@ -137,7 +137,6 @@ int main()
         orig_lines = readFile("aoc_in.txt");
         cFastFileReader in("aoc_in.txt");
     }
-
     is_first_part = true;
     solvePart();
     is_first_part = false;

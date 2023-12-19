@@ -45,7 +45,8 @@ namespace vs = std::views;
 
 extern FILE* out;
 
-#define P(...) do { if(out) { fprintf(out, "%s", print_prefix); fprintf(out, __VA_ARGS__); } } while(false)
+#define P(...) do { if(out) { fprintf(out, "\n%s", print_prefix); fprintf(out, __VA_ARGS__); } } while(false)
+#define PC(...) do { if(out) { fprintf(out, __VA_ARGS__); } } while(false)
 
 #ifdef _DEBUG
 #define ASSERT(x) if(!(x)) __debugbreak()
