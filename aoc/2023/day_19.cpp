@@ -10,103 +10,76 @@ struct cDir
     ll var;
     bool is_less;
     ll val;
-    ll target;
+    string target;
 };
 
 struct cRule
 {
     vector<cDir> dirs; // x/m/a/s, target
-    ll final_target;
     string name;
 };
 
 // px{a<2006:qkq,m>2090:A,rfg}
 // px     a<2006 qkq    m>2090 A     rfg
 
+unordered_map<string, cRule> createRules()
+{
+    unordered_map<string, cRule> rules;
+    for (auto& l : blocks[0])
+    {
+        cRule& rule = rules[l.s[0]];
+        rule.name = l.s[0];
+        l.s.insert(l.s.end() - 1, "s>-1"s);
+        ll pn = l.s.size();
+        for (ll i = 1; i < pn; i += 2)
+        {
+            cDir& dir = rule.dirs.emplace_back();
+            dir.var = "xmas"s.find(l.s[i][0]);
+            dir.is_less = l.s[i][1] == '<';
+            dir.val = stol(l.s[i].substr(2));
+            dir.target = l.s[i + 1];
+        }
+    }
+    return rules;
+}
+
 void solveFirst()
 {
-    unordered_map<ll, cRule> rules;
-    unordered_map<string, ll> rule_names;
-    constexpr ll ACC = -1;
-    constexpr ll REJ = -2;
-    rule_names["A"s] = ACC;
-    rule_names["R"s] = REJ;
+    auto rules = createRules();
     ll res = 0;
-    bool second_part = false;
-    auto name_idx = [&](string& name) -> ll
+    for(auto& l: blocks[1])
+    {
+        auto ratings = l.i | views::drop(1) | views::stride(2);
+        string rule_name = "in"s;
+        for (;;)
         {
-            ll& name_idx = rule_names[name];
-            if (name_idx == 0)
+            for (auto& dir : rules[rule_name].dirs)
             {
-                name_idx = rule_names.size() - 1ll;
-            }
-            return name_idx;
-        };
-    auto next = [&](array<ll, 4>& p, cRule& rule) -> ll
-        {
-            for (auto& dir : rule.dirs)
-            {
-                ll value = p[dir.var];
                 if (dir.is_less)
                 {
-                    if (dir.val > value)
-                        return dir.target;
+                    if (dir.val > ratings[dir.var])
+                    {
+                        rule_name = dir.target;
+                        break;
+                    }
                 }
                 else
                 {
-                    if (dir.val < value)
-                        return dir.target;
+                    if (dir.val < ratings[dir.var])
+                    {
+                        rule_name = dir.target;
+                        break;
+                    }
                 }
             }
-            return rule.final_target;
-        };
-
-    for (auto& l : ls)
-    {
-        if (l.is_empty)
-        {
-            second_part = true;
-            continue;
-        }
-        if (!second_part)
-        {
-            cRule& rule = rules[name_idx(l.s[0])];
-            rule.name = l.s[0];
-            ll pn = l.s.size();
-            for (ll i = 1; i < pn - 1; i+=2)
+            if (rule_name == "A")
             {
-                cDir& dir = rule.dirs.emplace_back();
-                dir.var = "xmas"s.find(l.s[i][0]);
-                dir.is_less = l.s[i][1] == '<';
-                dir.val = stol(l.s[i].substr(2));
-                dir.target = name_idx(l.s[i + 1]);
+                res += ratings[0] + ratings[1] + ratings[2] + ratings[3];
+                break;
             }
-            rule.final_target = name_idx(l.s[pn - 1]);
-        }
-        else
-        {
-            array<ll, 4> p;
-            FOR(i, 4)
-                p[i] = l.i[i*2+1];
-            
-            ll ri = rule_names["in"s];
-            P("%lld, %lld, %lld, %lld -> in", p[0], p[1], p[2], p[3]);
-
-            for (;;)
+            if (rule_name == "R")
             {
-                ri = next(p, rules[ri]);
-                if (ri == ACC)
-                {
-                    PC(" -> ACCEPTED");
-                    res += p[0] + p[1] + p[2] + p[3];
-                    break;
-                }
-                if (ri == REJ)
-                {
-                    PC(" -> REJ");
-                    break;
-                }
-                PC(" -> %s", rules[ri].name.c_str());
+                break;
             }
         }
     }
@@ -115,62 +88,8 @@ void solveFirst()
 
 void solveSecond()
 {
-    unordered_map<ll, cRule> rules;
-    unordered_map<string, ll> rule_names;
-    constexpr ll ACC = -1;
-    constexpr ll REJ = -2;
-    rule_names["A"s] = ACC;
-    rule_names["R"s] = REJ;
     ll res = 0;
-    bool second_part = false;
-    auto name_idx = [&](const string& name) -> ll
-        {
-            ll& name_idx = rule_names[name];
-            if (name_idx == 0)
-            {
-                name_idx = rule_names.size() - 1ll;
-            }
-            return name_idx;
-        };
-    auto next = [&](array<ll, 4>& p, cRule& rule) -> ll
-        {
-            for (auto& dir : rule.dirs)
-            {
-                ll value = p[dir.var];
-                if (dir.is_less)
-                {
-                    if (dir.val > value)
-                        return dir.target;
-                }
-                else
-                {
-                    if (dir.val < value)
-                        return dir.target;
-                }
-            }
-            return rule.final_target;
-        };
-
-    for (auto& l : ls)
-    {
-        if (l.is_empty)
-        {
-            break;
-        }
-        cRule& rule = rules[name_idx(l.s[0])];
-        rule.name = l.s[0];
-        ll pn = l.s.size();
-        for (ll i = 1; i < pn - 1; i += 2)
-        {
-            cDir& dir = rule.dirs.emplace_back();
-            dir.var = "xmas"s.find(l.s[i][0]);
-            dir.is_less = l.s[i][1] == '<';
-            dir.val = stol(l.s[i].substr(2));
-            dir.target = name_idx(l.s[i + 1]);
-        }
-        rule.final_target = name_idx(l.s[pn - 1]);
-    }
-
+    auto rules = createRules();
     using cPart = array<pair<ll, ll>, 4>;
     auto size = [](pair<ll, ll> r) { return r.second >= r.first ? r.second - r.first + 1 : 0; };
     auto whole_size = [&](cPart& part) -> ll
@@ -198,25 +117,25 @@ void solveSecond()
             }
             return { going, remaining };
         };
-    vector<pair<ll, cPart>> parts;
+    vector<pair<string, cPart>> parts;
     cPart initial;
     FOR(i, 4)
     {
         initial[i].first = 1;
         initial[i].second = 4000;
     }
-    parts.emplace_back(name_idx("in"s), initial);
+    parts.emplace_back("in"s, initial);
     while (!parts.empty())
     {
-        auto [ri, part] = parts.back();
+        auto [rule_name, part] = parts.back();
         parts.pop_back();
-        if (ri == ACC)
+        if (rule_name == "A")
         {
             res += size(part[0]) * size(part[1]) * size(part[2]) * size(part[3]);
         }
-        else if (ri != REJ)
+        else if (rule_name != "R")
         {
-            cRule& rule = rules[ri];
+            cRule& rule = rules[rule_name];
             for (auto& dir : rule.dirs)
             {
                 auto [going, remaining] = split(part, dir);
@@ -230,10 +149,6 @@ void solveSecond()
                 }
                 else
                     break;
-            }
-            if (whole_size(part))
-            {
-                parts.emplace_back(rule.final_target, part);
             }
         }
     }

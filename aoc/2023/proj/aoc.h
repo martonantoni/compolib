@@ -114,6 +114,7 @@ struct cLine
 };
 
 extern vector<cLine> ls;
+extern vector<vector<cLine>> blocks;
 
 extern const char* main_delimeters;
 extern bool main_allow_empty_fields;

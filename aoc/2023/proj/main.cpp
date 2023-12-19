@@ -71,9 +71,8 @@ cIntVector cStringVector::ToIntVector() const
     return IntVector;
 }
 
-
-
 vector<cLine> ls;
+vector<vector<cLine>> blocks;
 bool is_first_part = true;
 
 cLogPerformance_Guard perf_guard("main");
@@ -103,6 +102,19 @@ vector<cLine> readFile(const char* fileName)
 const char* print_prefix = "";
 vector<cLine> orig_example_lines, orig_lines;
 
+void createBlocks()
+{
+    blocks.clear();
+    blocks.emplace_back();
+    for (auto& l : ls)
+    {
+        if (!l.is_empty)
+            blocks.back().emplace_back(l);
+        else
+            blocks.emplace_back();
+    }
+}
+
 void solvePart()
 {
     const char* part_name = is_first_part ? "FIRST" : "SECOND";
@@ -112,12 +124,14 @@ void solvePart()
         print_prefix = "EXAMPLE     ";
         printf("solving %s part... example\n", part_name);
         ls = orig_example_lines;
+        createBlocks();
         solve(is_first_part);
         print_prefix = "";
         P("\n");
     }
     printf("solving %s part...\n", part_name);
     ls = orig_lines;
+    createBlocks();
     {
         cLogPerformance_Guard perf(part_name);
         solve(is_first_part);
