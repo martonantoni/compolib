@@ -74,6 +74,7 @@ cIntVector cStringVector::ToIntVector() const
 vector<cLine> ls;
 vector<vector<cLine>> blocks;
 bool is_first_part = true;
+bool is_example = true;
 
 cLogPerformance_Guard perf_guard("main");
 
@@ -122,6 +123,7 @@ void solvePart()
     if (!orig_example_lines.empty())
     {
         print_prefix = "EXAMPLE     ";
+        is_example = true;
         printf("solving %s part... example\n", part_name);
         ls = orig_example_lines;
         createBlocks();
@@ -130,6 +132,7 @@ void solvePart()
         P("\n");
     }
     printf("solving %s part...\n", part_name);
+    is_example = false;
     ls = orig_lines;
     createBlocks();
     {

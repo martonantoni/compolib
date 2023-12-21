@@ -18,12 +18,7 @@ void printImage(cImage<char>& img)
     pos.col = 0;
     loop_row(pos, img)
     {
-        P("%.*s\n", img.w, &img[pos]);
-//         loop_col(pos, img)
-//         {
-//             P("%c", img[pos]);
-//         }
-//         P("\n");
+        P("%.*s", img.w, &img[pos]);
     }
     P("\n");
 }

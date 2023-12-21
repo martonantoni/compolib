@@ -119,6 +119,7 @@ extern vector<vector<cLine>> blocks;
 extern const char* main_delimeters;
 extern bool main_allow_empty_fields;
 extern bool is_first_part;
+extern bool is_example;
 extern const char* print_prefix;
 
 void solve(bool first);

@@ -88,13 +88,16 @@ struct cImage
     }
     DATA_TYPE& operator[](const cPosition& pos) { return at(pos); }
     cPosition bottomRight() const { return cPosition{ h - 1, w - 1 }; }
+    cPosition bottomLeft() const { return cPosition{ h - 1, 0 }; }
+    cPosition topLeft() const { return cPosition{ 0, 0 }; }
+    cPosition topRight() const { return cPosition{ 0, w -1 }; }
     cPosition middle() const { return cPosition{ h / 2, w / 2 }; }
 
     bool isValidPos(const cPosition& pos);
     // [&](cPosition pos)
     template<class T> void forEach4Neighbour(cPosition pos, const T& f)
     {
-        for (auto offset : neighbour4Positions)
+        for (auto offset : neighbour4Positions) 
         {
             cPosition neighbourPos = pos + offset;
             if (isValidPos(neighbourPos))
