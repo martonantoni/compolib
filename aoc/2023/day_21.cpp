@@ -89,12 +89,9 @@ void solveSecond()
          return;
 
     cImage<char> img = loadImage(ls);
-    cPosition sp;
-    img.forAll([&](cPosition p) { if (img[p] == 'S') sp = p; });
+    cPosition sp = img.iteratorToPos(find(ALL(img.cells), 'S'));
     img[sp] = '.';
     int bh = qn / img.h;
-
-    cPosition bp;
 
     ll dist_up = sp.row + 1;
     ll dist_down = img.h - sp.row;
@@ -135,7 +132,7 @@ void solveSecond()
             return sub_res;
         };
     ll base_dist = 0;
-    for(ll i = 1; i<bh+2;++i)
+    for (ll i = 1; i < bh + 2; ++i)
     {
         ll bottom_row_dist = base_dist + dist_up;
         ll top_row_dist = base_dist + dist_down;
@@ -150,9 +147,6 @@ void solveSecond()
         res += calculateCornerRow(top_row_dist + dist_right, counts_top_left);
         res += calculateCornerRow(top_row_dist + dist_right, counts_top_right);
         base_dist += img.h;
-    }
-    loop_col(bp, make_pair(1, bh +2))
-    {
     }
     P("result: %lld", res);
     printf("+-----------\n| result diff: %lld\n+-----------\n", res - 600090522932119ll);
