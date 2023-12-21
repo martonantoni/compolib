@@ -49,36 +49,10 @@ ll reachable(const vector<ll>& counts, ll steps)
 void solveFirst()
 {
     cImage<char> img = loadImage(ls);
-    cPosition sp;
-    img.forAll([&](cPosition p) { if (img[p] == 'S') sp = p; });
+    cPosition sp = img.iteratorToPos(find(ALL(img.cells), 'S'));
     img[sp] = '.';
     auto counts = getReachableCount(img, sp);
     P("result: %lld", reachable(counts, is_example?6:64));
-}
-
-pair<ll,ll> calculate2Dists(cImage<char> img)
-{
-    deque<pair<int, cPosition>> f;
-    f.emplace_back(1, cPosition { 0,0 });
-    while (!f.empty())
-    {
-        auto [s, p] = f.front();
-        f.pop_front();
-        if (img[p] != '.')
-            continue;
-        img[p] = s % 2 == 1 ? 'O' : 'E';
-        img.forEach4Neighbour(p, [&](auto np)
-            {
-                if (img[np] == '.')
-                {
-                    f.emplace_back(s + 1, np);
-                }
-            });
-    }
-    if (img.h < 20)
-        printImage(img);
-
-    return { count(ALL(img.cells), 'O'), count(ALL(img.cells), 'E') };
 }
 
 constexpr ll qn = 26'501'365;
