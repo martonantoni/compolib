@@ -1,165 +1,145 @@
 #include "aoc.h"
+#include "bmp.h"
+#include "utils.h"
 
-FILE* out = nullptr;
+const char* main_delimeters = " ,~";
+bool main_allow_empty_fields = false;
 
-namespace
+// 2,0,5~2,2,5
+
+//using cCoord = tuple<ll, ll, ll>;
+using cCoord = array<ll, 3>;
+
+bool isBetween(ll c, ll l, ll r)
 {
-    template<class T> void AddFields(T& Container, const std::string& SourceString, const std::string& Delimeters, int EmptyFieldsAllowed)
+    return c >= l && c <= r;
+}
+
+struct cBrick
+{
+    cCoord c[2];
+    int axis = 0;
+    bool intersect(cBrick& other)
     {
-        const char* SourcePos = SourceString.c_str();
-        if (Delimeters.length() > 1)
+        int ais = 0;
+        for (int i = 0; i < 3; ++i)
         {
-            for (;;)
-            {
-                const char* DelimeterPos = strpbrk(SourcePos, Delimeters.c_str());
-                if (!DelimeterPos)
-                    DelimeterPos = SourceString.c_str() + SourceString.length();
-                if (EmptyFieldsAllowed || DelimeterPos - SourcePos > 0)
-                    Container.push_back(std::string(SourcePos, (int)(DelimeterPos - SourcePos)));
-                if (!*DelimeterPos)
-                    break;
-                SourcePos = DelimeterPos + 1;
-            }
+            if (isBetween(c[0][i], other.c[0][i], other.c[1][i]) ||
+                isBetween(c[1][i], other.c[0][i], other.c[1][i]) ||
+                isBetween(other.c[0][i], c[0][i], c[1][i]) ||
+                isBetween(other.c[1][i], c[0][i], c[1][i]))
+                ++ais;
+
         }
-        else
-        {
-            char DelimeterChar = Delimeters[0];
-            for (;;)
-            {
-                const char* DelimeterPos = strchr(SourcePos, DelimeterChar);
-                if (!DelimeterPos)
-                    DelimeterPos = SourceString.c_str() + SourceString.length();
-                if (EmptyFieldsAllowed || DelimeterPos - SourcePos > 0)
-                    Container.push_back(std::string(SourcePos, (int)(DelimeterPos - SourcePos)));
-                if (!*DelimeterPos)
-                    break;
-                SourcePos = DelimeterPos + 1;
-            }
-        }
+        return ais == 3;
     }
-}
+};
 
-cStringVector::cStringVector(const std::string& SourceString, const std::string& Delimeters, bool EmptyFieldsAllowed)
+bool fall(int bi, vector<cBrick>& bricks)
 {
-    reserve(4);
-    AddFields(*this, SourceString, Delimeters, EmptyFieldsAllowed);
-}
-
-void cStringVector::FromString(const std::string& SourceString, const std::string& Delimeters, bool EmptyFieldsAllowed)
-{
-    clear();
-    reserve(4);
-    AddFields(*this, SourceString, Delimeters, EmptyFieldsAllowed);
-}
-
-int cStringVector::FindIndex(const std::string& Token, int From) const
-{
-    for (int i = From, iend = (int)size(); i < iend; ++i)
-        if ((*this)[i] == Token)
-            return i;
-    return -1;
-}
-
-cIntVector cStringVector::ToIntVector() const
-{
-    cIntVector IntVector;
-    IntVector.resize(size());
-    for (int i = 0, iend = (int)size(); i != iend; ++i)
+    cBrick& b = bricks[bi];
+    if (b.c[0][2] <= 1)
+        return false;
+    --b.c[0][2];
+    --b.c[1][2];
+    for (auto& ob : bricks)
     {
-        IntVector[i] = atoll((*this)[i].c_str());
-    }
-    return IntVector;
-}
-
-vector<cLine> ls;
-vector<vector<cLine>> blocks;
-bool is_first_part = true;
-bool is_example = true;
-
-cLogPerformance_Guard perf_guard("main");
-
-vector<cLine> readFile(const char* fileName)
-{
-    cFastFileReader in(fileName);
-    vector<cLine> lines;
-    int idx = 0;
-    for (auto file_line : in)
-    {
-        cLine& line = lines.emplace_back();
-        line.txt = (string)file_line;
-        line.idx = idx;
-        ++idx;
-        if (line.txt.empty())
-        {
-            line.is_empty = true;
+        if (&ob == &b)
             continue;
+        if (b.intersect(ob))
+        {
+            ++b.c[0][2];
+            ++b.c[1][2];
+            return false;
         }
-        line.s.FromString(line.txt, main_delimeters, main_allow_empty_fields);    // <-----------------------------  delimeters
-        line.i = line.s.ToIntVector();
     }
-    return lines;
+    return true;
 }
 
-const char* print_prefix = "";
-vector<cLine> orig_example_lines, orig_lines;
-
-void createBlocks()
+void solveFirst()
 {
-    blocks.clear();
-    blocks.emplace_back();
+    ll res = 0;
+    vector<cBrick> bs;
     for (auto& l : ls)
     {
-        if (!l.is_empty)
-            blocks.back().emplace_back(l);
-        else
-            blocks.emplace_back();
+        auto& b = bs.emplace_back();
+        FOR(i, 6)
+            b.c[i/3][i%3] = l.i[i];
+        FOR(i, 3)
+        {
+            if (b.c[0][i] != b.c[1][i])
+                b.axis = i;
+            if (b.c[0][i] > b.c[1][i])
+                swap(b.c[0][i], b.c[1][i]);
+        }
     }
+    int bss = (int)bs.size();
+    for (;;)
+    {
+        ll fallen = 0;
+        FOR(bi, bss)
+        {
+            if (fall(bi, bs))
+                ++fallen;
+        }
+        if (!fallen)
+            break;
+    }
+    vector<cBrick> old = bs;
+    FOR(bi, bss)
+    {
+        printf("%d\n", bi);
+        // remove bi:
+        cBrick& b = bs[bi];
+        b.c[0][2] = b.c[1][2] = -5;
+
+        bool safe_to_remove = true;
+
+        vector<int> fallen(bss, 0);
+
+        for (;;)
+        {
+            bool fell = false;
+            FOR(bj, bss)
+            {
+                if (bi == bj)
+                    continue;
+                if (fall(bj, bs))
+                {
+                    fell = true;
+                    fallen[bj] = 1;
+                }
+            }
+            if (!fell)
+                break;
+        }
+
+        //if (safe_to_remove)
+        //{
+        //    P("safe to remove: #%d", bi);
+        //    ++res;
+        //}
+
+        bs = old;
+
+        res += count(ALL(fallen), 1);
+    }
+    P("result: %lld", res);;
+
+
+//    cImage<char> img = loadImage(ls);
 }
 
-void solvePart()
+
+void solveSecond()
 {
-    const char* part_name = is_first_part ? "FIRST" : "SECOND";
-    P("\n\n<<<<< %s PART >>>>>\n\n", part_name);
-    if (!orig_example_lines.empty())
+    ll res = 0;
+    for (auto& l : ls)
     {
-        print_prefix = "EXAMPLE     ";
-        is_example = true;
-        printf("solving %s part... example\n", part_name);
-        ls = orig_example_lines;
-        createBlocks();
-        solve(is_first_part);
-        print_prefix = "";
-        P("\n");
     }
-    printf("solving %s part...\n", part_name);
-    is_example = false;
-    ls = orig_lines;
-    createBlocks();
-    {
-        cLogPerformance_Guard perf(part_name);
-        solve(is_first_part);
-    }
-    fflush(stdout); fflush(out);
+    P("result: %lld", res);
 }
 
-int main()
-{
-    out = fopen("aoc_out.txt", "w");
 
-    printf("Reading example input...\n");
-    orig_example_lines = readFile("aoc_example_in.txt");
-    printf("reading input...\n");
-    {
-        cLogPerformance_Guard perf("input reading & parsing");
-        orig_lines = readFile("aoc_in.txt");
-        cFastFileReader in("aoc_in.txt");
-    }
-    is_first_part = true;
-    solvePart();
-    is_first_part = false;
-    solvePart();
+ void solve(bool first) { first ? solveFirst() : solveSecond(); }
 
-    fclose(out);
-    out = nullptr;
-    return 0;
-}
