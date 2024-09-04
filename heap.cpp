@@ -1,98 +1,108 @@
-
-
-enum class eHeapStype { Min, Max };
-
-template<class T, eHeapStype HeapStype=eHeapStype::Max>
+﻿
+template<class T, auto Compare>
 class tHeap
 {
-	std::vector<T> mItems; 
-	static size_t GetParentIndex(size_t i) { return (i-1)/2; }
-	static size_t GetLeftChildIndex(size_t i) { return (i*2)+1; }
-	static size_t GetRightChildIndex(size_t i) { return GetLeftChildIndex(i)+1; }
-	static bool IsStronger(const T &a, const T &b) { return HeapStype==eHeapStype::Max?a>b:a<b;	}
-	size_t BubbleUp(size_t i)
-	{
-		while(i) // at most until it is at the root
-		{
-			auto ParentIndex=GetParentIndex(i);
-			if(IsStronger(mItems[i],mItems[ParentIndex]))
-			{
-				std::swap(mItems[i], mItems[ParentIndex]);
-				i=ParentIndex;
-			}
-			else
-				break;
-		}
-		return i;
-	}
-	void FixHeap(size_t i)
-	{
-		for(;;)
-		{
-			auto LeftChildIndex=GetLeftChildIndex(i);
-			if(LeftChildIndex>=mItems.size())
-				break;
-			auto &LeftChild=mItems[LeftChildIndex];
-			auto RightChildIndex=GetRightChildIndex(i);
-			bool IsRightBiggerThanLeft=RightChildIndex<mItems.size()&&IsStronger(mItems[RightChildIndex],mItems[LeftChildIndex]);
-			auto &ItemToCompare=mItems[IsRightBiggerThanLeft?RightChildIndex:LeftChildIndex];
-			if(IsStronger(ItemToCompare,mItems[i]))
-			{
-				std::swap(ItemToCompare, mItems[i]);
-				i=IsRightBiggerThanLeft?RightChildIndex:LeftChildIndex;
-			}
-			else
-				break;
-		}
-	}
+    std::vector<T> mHeap;
+    size_t mContainerSize = 1;
+    static consteval size_t root() { return 1; }
+    static size_t leftChild(size_t index) { return 2 * index; }
+    static size_t rightChild(size_t index) { return 2 * index + 1; }
+    static size_t parent(size_t index) { return index / 2; }
 public:
-	void push(T Item)
-	{
-		size_t i=mItems.size();
-		mItems.emplace_back(Item);
-		BubbleUp(i);
-	}
-	void erase(size_t i)
-	{
-		if(i==mItems.size()-1)
-		{
-			mItems.pop_back();
-			return;
-		}
-		std::swap(mItems.back(), mItems[i]);
-		mItems.pop_back();
-		
-		if(i!=BubbleUp(i))
-			return;
-		FixHeap(i);
-	}
-	void erase(typename std::vector<T>::const_iterator i) { erase(i-mItems.begin()); }
-	void heapify(std::vector<T> &&Items)
-	{
-		mItems=std::move(Items);
-		if(mItems.size()<=1)
-			return;
-		size_t i=GetParentIndex(mItems.size()-1);
-		for(;;)
-		{
-			FixHeap(i);
-			if(i==0)
-				break;
-			--i;
-		} 
-	}
-	const T &front() const { return mItems[0]; }
-	T pop_front()
-	{
-		T t(std::move(mItems[0]));
-		erase(0);
-		return t;
-	}
-	size_t size() const { return mItems.size(); }
-	bool empty() const { return mItems.empty();	}
-
-	auto begin() { return mItems.begin(); }
-	auto end() { return mItems.end(); }
-	auto begin() const { return mItems.begin(); }
-	auto end() const { return mItems.end(); }
+    tHeap() { mHeap.push_back(T{}); }
+    const T& top() const { return mHeap[root()]; }
+    void push(const T& value);
+    void pop();
+    size_t size() const { return mContainerSize - 1; }
+    bool empty() const { return size() == 0; }
 };
+
+template<class T, auto Compare> void tHeap<T, Compare>::push(const T& value)
+{
+    mHeap.push_back(value);
+    ++mContainerSize;
+    size_t index = mContainerSize - 1;
+    while (index != root() && Compare(mHeap[index], mHeap[parent(index)]))
+    {
+        std::swap(mHeap[index], mHeap[parent(index)]);
+        index = parent(index);
+    }
+}
+
+template<class T, auto Compare> void tHeap<T, Compare>::pop()
+{
+    std::swap(mHeap[root()], mHeap[mContainerSize - 1]);
+    mHeap.pop_back();
+    --mContainerSize;
+    size_t index = root();
+    size_t lastIndex = mContainerSize - 1;
+    for(;;)
+    {
+        size_t left = leftChild(index);
+        size_t right = rightChild(index);
+        if(left > lastIndex)
+            break;
+        if(right > lastIndex)
+        {
+            if(Compare(mHeap[left], mHeap[index]))
+                std::swap(mHeap[left], mHeap[index]);
+            break;
+        }
+        if(Compare(mHeap[left], mHeap[index]))
+        {
+            if(Compare(mHeap[left], mHeap[right]))
+            {
+                std::swap(mHeap[left], mHeap[index]);
+                index = left;
+            }
+            else
+            {
+                std::swap(mHeap[right], mHeap[index]);
+                index = right;
+            }
+        }
+        else if(Compare(mHeap[right], mHeap[index]))
+        {
+            std::swap(mHeap[right], mHeap[index]);
+            index = right;
+        }
+        else
+            break;
+    }
+}
+
+/*
+class cSolver
+{
+    tHeap<uint64_t, std::greater<>{} > mLeft;
+    tHeap<uint64_t, std::less<>{}> mRight;
+public:
+    void push(uint64_t value);
+    uint64_t median() const;
+};
+
+void cSolver::push(uint64_t value)
+{
+    if(mLeft.empty() || mLeft.top() >= value)
+        mLeft.push(value);
+    else
+        mRight.push(value);
+    if(mLeft.size() > mRight.size() + 1)
+    {
+        mRight.push(mLeft.top());
+        mLeft.pop();
+    }
+    else if(mRight.size() > mLeft.size())
+    {
+        mLeft.push(mRight.top());
+        mRight.pop();
+    }
+}
+
+uint64_t cSolver::median() const
+{
+    if(mLeft.size() == mRight.size())
+        return (mLeft.top() + mRight.top()) / 2;
+    return mLeft.top();
+}
+*/
