@@ -9,7 +9,7 @@ class tHeap
     static size_t rightChild(size_t index) { return 2 * index + 1; }
     static size_t parent(size_t index) { return index / 2; }
 public:
-    tHeap() { mHeap.push_back(T{}); }
+    tHeap() { mHeap.push_back(T{}); } // dummy element at index 0
     const T& top() const { return mHeap[root()]; }
     void push(const T& value);
     void pop();
