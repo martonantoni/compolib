@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.26)
+project(aoc_solver LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Gather all .cpp files in the current directory
+file(GLOB SOURCES "*.cpp")
+
+# Add the executable target
+add_executable(aoc_solver ${SOURCES})
