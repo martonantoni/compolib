@@ -131,34 +131,40 @@ cIntVector tStringVector<StoredType>::toIntVector() const
     intVector.resize(this->size());
     for (auto&& [idx, s] : std::views::enumerate(*this))
     {
-        if constexpr (std::is_same_v<StoredType, std::string>)
+        try
         {
-            intVector[idx] = std::stoi(s);
-        }
-        else
-        {
-            intVector[idx] = 0;
-            std::string_view sv(s);
-            trim(sv);
-            if (sv.empty())
-                continue;
-            int isNegative = sv[0] == '-';
-            if (isNegative)
-                sv.remove_prefix(1);
-            if (sv.empty())
-                continue;
-            if (sv[0] < '0' || sv[0] > '9')
-                throw std::runtime_error("Invalid number format");
-            for (auto c : sv)
+            if constexpr (std::is_same_v<StoredType, std::string>)
             {
-                if (c < '0' || c > '9')
-                {
-                    break;
-                }
-                intVector[idx] = intVector[idx] * 10 + c - '0';
+                intVector[idx] = std::stoi(s);
             }
-            if (isNegative)
-                intVector[idx] = -intVector[idx];
+            else
+            {
+                intVector[idx] = 0;
+                std::string_view sv(s);
+                trim(sv);
+                if (sv.empty())
+                    continue;
+                int isNegative = sv[0] == '-';
+                if (isNegative)
+                    sv.remove_prefix(1);
+                if (sv.empty())
+                    continue;
+                if (sv[0] < '0' || sv[0] > '9')
+                    throw std::runtime_error("Invalid number format");
+                for (auto c : sv)
+                {
+                    if (c < '0' || c > '9')
+                    {
+                        break;
+                    }
+                    intVector[idx] = intVector[idx] * 10 + c - '0';
+                }
+                if (isNegative)
+                    intVector[idx] = -intVector[idx];
+            }
+        }
+        catch (std::exception& e)
+        {
         }
     }
     return intVector;
