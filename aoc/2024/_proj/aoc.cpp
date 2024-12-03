@@ -17,28 +17,16 @@ void solve(bool first)
 
 void solveFirst()
 {
-    ll r = 0;
-    for(auto& l: ls)
-        r += l.i[0];
+    ll sum = 0;
+    for (auto& l : ls)
+    {
+        auto& s = l.s; auto& is = l.i; auto& txt = l.txt; auto idx = l.idx;
 
-    P("Result: {}\n", r);
+    }
+
+    P("Result: {}\n", sum);
 }
 
 void solveSecond()
 {
-    ll r = 0;
-    unordered_set<ll> seen;
-    for (;;)
-    {
-        for (auto& l : ls)
-        {
-            r += l.i[0];
-            if (seen.contains(r))
-            {
-                P("Result: {}\n", r);
-                return;
-            }
-            seen.insert(r);
-        }
-    }
 }
