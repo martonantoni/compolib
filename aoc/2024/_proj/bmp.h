@@ -147,6 +147,19 @@ struct cImage
         for (auto& c : cells) c += x;
         return *this;
     }
+
+    auto allPos() const
+    {
+        return views::iota(0, h) | 
+            views::transform([this](int r)
+            { 
+                    return views::iota(0, w) | 
+                        views::transform([r](int c) 
+                            { 
+                                return cPosition(r, c); 
+                            }); 
+            }) | views::join;
+    }
 };
 
 template<class DATA_TYPE>
