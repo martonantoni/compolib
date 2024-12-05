@@ -7,7 +7,6 @@ const char* outFileName = "aoc_out.txt";
 const char* main_delimeters = " ,|";
 bool main_allow_empty_fields = false;
 
-
 void solve(bool first)
 {
     ll sum = 0;
@@ -32,25 +31,9 @@ void solve(bool first)
     for (auto& manual : manuals)
     {
         auto sorted = manual;
-
-        sort(ALL(sorted), [&](ll a, ll b)
-            {
-                auto i = orders.find(a);
-                if (i == orders.end())
-                    return false;
-                auto j = find(ALL(i->second), b);
-                return j != i->second.end();
-            });
-        if (first)
-        {
-            if (sorted == manual)
-                sum += sorted[sorted.size() / 2];
-        }
-        else
-        {
-            if (sorted != manual)
-                sum += sorted[sorted.size() / 2];
-        }
+        sort(ALL(sorted), [&](ll a, ll b) { return rng::contains(orders[a], b); });
+        if ((first && sorted == manual) || (!first && sorted != manual))
+            sum += sorted[sorted.size() / 2];
     }
     P("Result: {}\n", sum);
 }
