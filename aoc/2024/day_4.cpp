@@ -16,9 +16,9 @@ void solve(bool first)
         solveSecond();
 }
 
-bool isXMAS(auto& img, auto pos, auto dir)
+bool isXMAS(cImage<char>& img, cPosition pos, cPosition dir)
 {
-    for (char c: "XMAS"s)
+    for (char c : "XMAS"s)
     {
         if (!img.isValidPos(pos))
             return false;
@@ -31,24 +31,16 @@ bool isXMAS(auto& img, auto pos, auto dir)
 
 bool isMAS(cImage<char>& img, cPosition center)
 {
-    if (img.at(center) != 'A')
+    if (img[center] != 'A')
         return false;
-
-    cPosition a1 = center + direction_NE;
-    cPosition a2 = center + direction_SW;
-
-    cPosition b1 = center + direction_NW;
-    cPosition b2 = center + direction_SE;
-
-    if (!img.isValidPos(a1) || !img.isValidPos(a2) || !img.isValidPos(b1) || !img.isValidPos(b2))
-        return false;
-
-    if ((img[a1] == 'M' && img[a2] == 'S') || (img[a1] == 'S' && img[a2] == 'M'))
+    for (auto dir : { direction_NE, direction_NW })
     {
-        if ((img[b1] == 'M' && img[b2] == 'S') || (img[b1] == 'S' && img[b2] == 'M'))
-            return true;
+        if (!img.isValidPos(center + dir) || !img.isValidPos(center - dir))
+            return false;
+        if (img[center + dir] + img[center - dir] != 'M' + 'S')
+            return false;
     }
-    return false;
+    return true;
 }
 
 void solveFirst()
@@ -58,11 +50,7 @@ void solveFirst()
     cImage img = loadImage(ls);
     for (auto p : img.allPos())
     {
-        for (auto dir : neighbour8Positions)
-        {
-            if (isXMAS(img, p, dir))
-                ++sum;
-        }
+        sum += rng::count_if(neighbour8Positions, [&](auto dir) { return isXMAS(img, p, dir); });
     }
 
     P("Result: {}\n", sum);
@@ -70,13 +58,7 @@ void solveFirst()
 
 void solveSecond()
 {
-    ll sum = 0;
-
     cImage img = loadImage(ls);
-    for (auto p : img.allPos())
-    {
-        if (isMAS(img, p))
-            ++sum;
-    }
+    ll sum = rng::count_if(img.allPos(), [&](auto p) { return isMAS(img, p); });
     P("Result: {}\n", sum);
 }
