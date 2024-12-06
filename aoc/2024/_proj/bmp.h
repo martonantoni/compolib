@@ -34,6 +34,11 @@ constexpr cPosition operator+(const cPosition& l, const cPosition& r)
     return { l.row + r.row, l.col + r.col };
 }
 
+constexpr cPosition operator-(const cPosition& l, const cPosition& r)
+{
+    return { l.row - r.row, l.col - r.col };
+}
+
 ll polygonArea(const vector<cPosition>& points);
 
 constexpr static cPosition direction_N = { -1, 0 };                     //         N
@@ -56,6 +61,43 @@ constexpr static array<cPosition, 8> neighbour8Positions = // in clockwise order
     direction_N, direction_NE, direction_E, direction_SE, direction_S, direction_SW, direction_W, direction_NW
 } };
 
+
+struct cDirection
+{
+    int index;
+    operator size_t() const { return index; }
+    operator cPosition() const { return neighbour8Positions[index]; }
+    void rot90() { index = (index + 2) % 8; }
+    void rot45() { index = (index + 1) % 8; }
+    void rot90ccw() { index = (index + 6) % 8; }
+    void rot45ccw() { index = (index + 7) % 8; }
+    static cDirection fromMark(char c)
+    {
+        return cDirection("^>V<"s.find(c) * 2);
+    }
+};
+
+inline cPosition& operator+=(cPosition& l, cDirection r)
+{
+    l += neighbour8Positions[r.index];
+    return l;
+}
+
+inline cPosition& operator-=(cPosition& l, cDirection r)
+{
+    l += neighbour8Positions[r.index];
+    return l;
+}
+
+inline constexpr cPosition operator+(cPosition l, cDirection r)
+{
+    return l + neighbour8Positions[r.index];
+}
+
+inline constexpr cPosition operator-(cPosition l, cDirection r)
+{
+    return l - neighbour8Positions[r.index];
+}
 
 template<class DATA_TYPE>
 struct cImage
@@ -204,3 +246,15 @@ template<class T> inline int _loop_col_helper(cPosition& pos, const cImage<T>& i
 
 #define loop_row(p, ...) for(int row_end = _loop_row_helper(p, __VA_ARGS__);p.row<row_end;++p.row)
 #define loop_col(p, ...) for(int col_end = _loop_col_helper(p, __VA_ARGS__);p.col<col_end;++p.col)
+
+
+
+//cImage img = loadImage(ls);
+//for (auto p : img.allPos())
+//{
+//    for (auto dir : neighbour8Positions)
+//    {
+//        if (isXMAS(img, p, dir))
+//            ++sum;
+//    }
+//}
