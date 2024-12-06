@@ -1,5 +1,7 @@
 #include "aoc.h"
 
+#include <fstream>
+
 FILE* out = nullptr;
 
 vector<cLine> ls;
@@ -9,25 +11,49 @@ bool is_example = true;
 
 cLogPerformance_Guard perf_guard("main");
 
-vector<cLine> readFile(const char* fileName)
+//vector<cLine> readFile(const char* fileName)
+//{
+//    cFastFileReader in(fileName);
+//    vector<cLine> lines;
+//    int idx = 0;
+//    for (auto file_line : in)
+//    {
+//        cLine& line = lines.emplace_back();
+//        line.txt = (string)file_line;
+//        line.idx = idx;
+//        ++idx;
+//        if (line.txt.empty())
+//        {
+//            line.is_empty = true;
+//            continue;
+//        }
+//        line.s.fromString(line.txt, main_delimeters, main_allow_empty_fields);    // <-----------------------------  delimeters
+//        line.i = line.s.toIntVector();
+//    }
+//    return lines;
+//}
+
+std::vector<cLine> readFile(const char* fileName) 
 {
-    cFastFileReader in(fileName);
-    vector<cLine> lines;
+    std::ifstream in(fileName);
+    if (!in) return {};
+
+    std::vector<cLine> lines;
+    std::string l;
     int idx = 0;
-    for (auto file_line : in)
-    {
+
+    while (std::getline(in, l)) {
         cLine& line = lines.emplace_back();
-        line.txt = (string)file_line;
-        line.idx = idx;
-        ++idx;
-        if (line.txt.empty())
-        {
+        line.txt = l;
+        line.idx = idx++;
+        if (l.empty()) {
             line.is_empty = true;
             continue;
         }
-        line.s.fromString(line.txt, main_delimeters, main_allow_empty_fields);    // <-----------------------------  delimeters
+        line.s.fromString(l, main_delimeters, main_allow_empty_fields);
         line.i = line.s.toIntVector();
     }
+
     return lines;
 }
 
@@ -84,7 +110,6 @@ int main()
     {
         cLogPerformance_Guard perf("input reading & parsing");
         orig_lines = readFile("aoc_in.txt");
-        cFastFileReader in("aoc_in.txt");
     }
     is_first_part = true;
     solvePart();
