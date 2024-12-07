@@ -135,7 +135,7 @@ cIntVector tStringVector<StoredType>::toIntVector() const
         {
             if constexpr (std::is_same_v<StoredType, std::string>)
             {
-                intVector[idx] = std::stoi(s);
+                intVector[idx] = std::stoll(s);
             }
             else
             {
