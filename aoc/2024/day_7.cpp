@@ -43,7 +43,7 @@ void solve(bool first)
                     }
                     else
                     {
-                        sum = stoll(to_string(sum) + to_string(nums[j + 1]));
+                        sum = stoll(to_string(sum) + l.s[j+2]);
                     }
                     break;
                 }
