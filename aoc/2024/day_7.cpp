@@ -43,9 +43,7 @@ void solve(bool first)
                     }
                     else
                     {
-                        for (int k = 0; k < l.s[j + 2].size(); ++k)
-                            sum *= 10ll;
-                        sum += nums[j + 1];
+                        sum = stoll(to_string(sum) + to_string(nums[j + 1]));
                     }
                     break;
                 }
