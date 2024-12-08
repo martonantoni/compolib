@@ -190,7 +190,7 @@ struct cImage
         return *this;
     }
 
-    auto allPos() const
+    auto allPos()
     {
         return views::iota(0, h) | 
             views::transform([this](int r)
@@ -201,6 +201,11 @@ struct cImage
                                 return cPosition(r, c); 
                             }); 
             }) | views::join;
+    }
+    auto allPosV()
+    {
+        return allPos() | 
+            views::transform([this](cPosition p) { return make_pair(p, (*this)[p]); });
     }
 };
 
@@ -223,6 +228,7 @@ inline cImage<char> loadImage(auto lines)
         image.w = static_cast<int>(lines[0].txt.size());
         image.h = static_cast<int>(lines.size());
     }
+    P("image size: {} x {}", image.w, image.h);
     int size = image.w * image.h;
     image.cells.resize(size);
     int p = 0;
