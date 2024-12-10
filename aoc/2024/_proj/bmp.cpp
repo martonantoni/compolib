@@ -34,10 +34,10 @@ void floodFillImage(cImage<char>& img, cPosition startPos, char fillChar, char b
         if (img[p] == fillChar || img[p] == borderChar)
             continue;
         img[p] = fillChar;
-        img.forEach4Neighbour(p, [&](cPosition np)
-            {
-                f.emplace_back(np);
-            });
+        for (auto np : img.neighbours(p))
+        {
+            f.emplace_back(np);
+        }
     }
 
 }

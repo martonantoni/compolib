@@ -136,41 +136,7 @@ struct cImage
     cPosition middle() const { return cPosition{ h / 2, w / 2 }; }
 
     bool isValidPos(const cPosition& pos);
-    // [&](cPosition pos)
-    template<class T> void forEach4Neighbour(cPosition pos, const T& f)
-    {
-        for (auto offset : neighbour4Positions) 
-        {
-            cPosition neighbourPos = pos + offset;
-            if (isValidPos(neighbourPos))
-            {
-                f(neighbourPos);
-            }
-        }
-    }
-    // [&](cPosition pos)
-    template<class T, class C> void forOffsets(cPosition pos, const C& offsets, const T& f)
-    {
-        for (auto offset : offsets)
-        {
-            cPosition neighbourPos = pos + offset;
-            if (isValidPos(neighbourPos))
-            {
-                f(neighbourPos);
-            }
-        }
-    }
-    // [&](cPosition pos)
-    template<class T> void forAll(const T& f)
-    {
-        for (int r = 0; r < h; ++r)
-        {
-            for (int c = 0; c < w; ++c)
-            {
-                f(cPosition(r, c));
-            }
-        }
-    }
+
     template<class U>
     void initSize(const cImage<U>& other)
     {
@@ -206,6 +172,18 @@ struct cImage
     {
         return allPos() | 
             views::transform([this](cPosition p) { return make_pair(p, (*this)[p]); });
+    }
+    auto neighbours(cPosition pos)
+    {
+        return neighbour4Positions |
+            views::transform([pos](cPosition p) { return pos + p; }) |
+            views::filter([this](cPosition p) { return isValidPos(p); });
+    }
+    auto neighbours8(const cPosition& pos)
+    {
+        return neighbour8Positions |
+            views::transform([pos](cPosition p) { return pos + p; }) |
+            views::filter([this](cPosition p) { return isValidPos(p); });
     }
 };
 
