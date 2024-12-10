@@ -24,7 +24,9 @@
 #include <filesystem>
 #include <ctime>
 #include <ranges>
+#ifdef __cpp_lib_print
 #include <print>
+#endif
 
 using ll = long long;
 using cIntVector = std::vector<ll>;
@@ -46,8 +48,16 @@ namespace vs = std::views;
 
 extern FILE* out;
 
+#ifdef __cpp_lib_print
 #define P(...) do { if(out) { std::print(out, "\n{}", print_prefix); print(out, __VA_ARGS__); } } while(false)
 #define PC(...) do { if(out) { std::print(out, __VA_ARGS__); } } while(false)
+#define RESULT(arg) do { if(out) { std::print(out, "\nRESULT: {}", arg); } } while(false)
+#else
+#define P(...)
+#define PC(...)
+#define RESULT(arg) do { std::cout << "RESULT: " << arg << std::endl; } while(false)
+#endif
+
 
 #ifdef _DEBUG
 #define ASSERT(x) if(!(x)) __debugbreak()
