@@ -32,6 +32,7 @@ using ll = long long;
 using cIntVector = std::vector<ll>;
 
 #include "string_vector.h"
+#include "clipboard.h"
 
 namespace fs = std::filesystem;
 namespace rng = std::ranges;
@@ -51,11 +52,11 @@ extern FILE* out;
 #ifdef __cpp_lib_print
 #define P(...) do { if(out) { std::print(out, "\n{}", print_prefix); print(out, __VA_ARGS__); } } while(false)
 #define PC(...) do { if(out) { std::print(out, __VA_ARGS__); } } while(false)
-#define RESULT(arg) do { if(out) { std::print(out, "\nRESULT: {}", arg); } } while(false)
+#define RESULT(arg) do { if(out) { std::print(out, "\nRESULT: {}", arg); } textToClipboard(to_string(arg)); } while(false)
 #else
 #define P(...)
 #define PC(...)
-#define RESULT(arg) do { std::cout << "RESULT: " << arg << std::endl; } while(false)
+#define RESULT(arg) do { std::cout << "RESULT: " << arg << std::endl; textToClipboard(to_string(arg)); } while(false)
 #endif
 
 
