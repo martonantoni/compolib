@@ -22,6 +22,7 @@ struct cPosition
     ll& operator[](ll i) { return i == 0 ? row : col; }
     cPosition operator*(ll m) const { return cPosition(row * m, col * m); }
     cPosition operator-() const { return cPosition(-row, -col); }
+    ll component(int i) const { return i == 0 ? row : col; }
 };
 
 template<> struct hash<cPosition>
