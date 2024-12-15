@@ -14,6 +14,12 @@ struct cPosition
         col += p.col;
         return *this;
     }
+    cPosition& operator-=(const cPosition& p)
+    {
+        row -= p.row;
+        col -= p.col;
+        return *this;
+    }
     bool isWithinBounds(ll w, ll h) const
     {
         return row >= 0 && row < h&& col >= 0 && col < w;
@@ -219,8 +225,34 @@ inline cImage<char> loadImage(auto lines)
     return image;
 }
 
+inline cImage<char> loadImageExtended(auto lines, char borderC)
+{
+    cImage<char> image;
+    if (lines.empty())
+    {
+        image.w = 2;
+        image.h = 2;
+    }
+    else
+    {
+        image.w = static_cast<int>(lines[0].txt.size()) + 2;
+        image.h = static_cast<int>(lines.size()) + 2;
+    }
+    P("image size: {} x {}", image.w - 2, image.h - 2);
+    int size = image.w * image.h;
+    image.cells.resize(size, borderC);
+    int p = image.w + 1;
+    for (auto& line : lines)
+    {
+        memcpy(image.cells.data() + p, line.txt.c_str(), image.w - 2);
+        p += image.w;
+    }
+    return image;
+}
+
 void printImage(cImage<char>& img);
 void floodFillImage(cImage<char>& img, cPosition startPos, char fillChar, char borderChar);
+                           // borderChar: what is considered as the border
 
 inline int _loop_row_helper(cPosition& pos, const pair<int, int>& p) { pos.row = p.first; return p.second; }
 inline int _loop_row_helper(cPosition& pos, int from, int to) { pos.row = from; return to; }
