@@ -80,9 +80,15 @@ struct cDirection
     void rot45ccw() { index = (index + 7) % 8; }
     static cDirection fromMark(char c)
     {
-        return cDirection("^>V<"s.find(c) * 2);
+        return cDirection("^>V<"s.find(c == 'v' ? 'V' : c) * 2);
     }
+    static cDirection north() { return cDirection{ 0 }; }
+    static cDirection east() { return cDirection{ 2 }; }
+    static cDirection south() { return cDirection{ 4 }; }
+    static cDirection west() { return cDirection{ 6 }; }
 };
+
+
 
 inline cPosition& operator+=(cPosition& l, cDirection r)
 {
@@ -92,7 +98,7 @@ inline cPosition& operator+=(cPosition& l, cDirection r)
 
 inline cPosition& operator-=(cPosition& l, cDirection r)
 {
-    l += neighbour8Positions[r.index];
+    l -= neighbour8Positions[r.index];
     return l;
 }
 
