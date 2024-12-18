@@ -38,6 +38,9 @@ namespace fs = std::filesystem;
 namespace rng = std::ranges;
 namespace vs = std::views;
 
+using std::views::enumerate;
+using std::views::iota;
+using std::views::zip;
 
 #undef max
 #undef min
@@ -52,11 +55,11 @@ extern FILE* out;
 #ifdef __cpp_lib_print
 #define P(...) do { if(out) { std::print(out, "\n{}", print_prefix); print(out, __VA_ARGS__); } } while(false)
 #define PC(...) do { if(out) { std::print(out, __VA_ARGS__); } } while(false)
-#define RESULT(arg) do { if(out) { std::print(out, "\nRESULT: {}", arg); } textToClipboard(to_string(arg)); } while(false)
+#define RESULT(arg) do { if(out) { std::print(out, "\n{}RESULT: {}", print_prefix, arg); } textToClipboard(to_string(arg)); } while(false)
 #else
 #define P(...)
 #define PC(...)
-#define RESULT(arg) do { std::cout << "RESULT: " << arg << std::endl; textToClipboard(to_string(arg)); } while(false)
+#define RESULT(arg) do { std::cout << "\n" << print_prefix << "RESULT: " << arg << std::endl; textToClipboard(to_string(arg)); } while(false)
 #endif
 
 
@@ -131,3 +134,32 @@ void solve(bool first);
 
 void solveFirst();
 void solveSecond();
+
+
+
+
+// Hivasnal nagyon figyelni, hogy a "to" az mar nem lehetseges ertek kell hogy legyen
+
+#define higher true
+#define lower false
+auto value_lower_bound(auto from, auto to, auto p)
+{
+    for (;;)
+    {
+        if (from == to)
+            return from - 1;
+        auto mid = from + (to - from) / 2;
+        bool result = p(mid);
+#ifdef _DEBUG
+        printf("trying %lld, result: %s\n", mid, result == higher ? "higher" : "lower");
+#endif
+        if (result == higher)
+        {
+            from = mid + 1;
+        }
+        else
+        {
+            to = mid;
+        }
+    }
+}

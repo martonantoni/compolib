@@ -76,6 +76,7 @@ struct cDirection
     operator cPosition() const { return neighbour8Positions[index]; }
     void rot90() { index = (index + 2) % 8; }
     void rot45() { index = (index + 1) % 8; }
+    void rot180() { index = (index + 4) % 8; }
     void rot90ccw() { index = (index + 6) % 8; }
     void rot45ccw() { index = (index + 7) % 8; }
     static cDirection fromMark(char c)
@@ -119,13 +120,13 @@ struct cImage
     vector<DATA_TYPE> cells;
 
     cImage() = default;
-    template<class U> cImage(const cImage<U>& base, const DATA_TYPE& init_value)
+    template<class U, class T> cImage(const cImage<U>& base, T&& init_value)
     {
         cells.resize(base.cells.size(), init_value);
         w = base.w;
         h = base.h;
     }
-    template<class U> cImage(const cImage<U>& base)
+    template<class U> explicit cImage(const cImage<U>& base)
     {
         cells.resize(base.cells.size());
         w = base.w;
