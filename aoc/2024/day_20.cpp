@@ -50,6 +50,8 @@ void fill_best(cImage<char>& img, cPosition start, cImage<int>& best)
 
 void solve(bool first)
 {
+    if (is_example)
+        return;
     ll res = 0;
 
     auto img = loadImage(ls);
@@ -72,32 +74,40 @@ void solve(bool first)
 
     auto base = best_from_start[end_pos];
 
-    P("base: {}", base);
-
-    unordered_map<int, int> saves;
+    vector<cPosition> offsets;
+    int max_dist = first ? 2 : 20;
+    for (int x = -max_dist; x <= max_dist; ++x)
+    {
+        for (int y = -max_dist; y <= max_dist; ++y)
+        {
+            int ny_dist = abs(x) + abs(y);
+            if (ny_dist < 2 || ny_dist > max_dist)
+            {
+                continue;
+            }
+            offsets.emplace_back(x, y);
+        }
+    }
 
     for (auto c_start : img.allPos())
     {
-        for (int c_length = 2; c_length <= (first ? 2 : 20); ++c_length)
+        if (img[c_start] != '.')
         {
-            for (auto c_end : img.allPos())
+            continue;
+        }
+        for (auto offset : offsets)
+        {
+            auto c_end = c_start + offset;
+            if (!img.isValidPos(c_end) || img[c_end] != '.')
             {
-                if (img[c_end] != '.' || img[c_start] != '.')
-                {
-                    continue;
-                }
-                int ny_dist = abs(c_start.row - c_end.row) + abs(c_start.col - c_end.col);
-                if (ny_dist != c_length)
-                {
-                    continue;
-                }
-                int dist = best_from_start[c_start] + best_from_end[c_end] + ny_dist;
-                int save = base - dist;
-                if (save >= 100)
-                {
-                    ++res;
-                }
-                saves[save]++;
+                continue;
+            }
+            int ny_dist = abs(c_start.row - c_end.row) + abs(c_start.col - c_end.col);
+            int dist = best_from_start[c_start] + best_from_end[c_end] + ny_dist;
+            int save = base - dist;
+            if (save >= 100)
+            {
+                ++res;
             }
         }
     }
