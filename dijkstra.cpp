@@ -1,5 +1,5 @@
 template<typename cLocation>
-auto runDijkstra(const cLocation& from, auto locationToIdx, auto nextLocations, size_t numberOfLocations)
+auto runDijkstra(const auto& from, auto locationToIdx, auto nextLocations, size_t numberOfLocations)
 {
     struct cNode
     {
@@ -8,11 +8,23 @@ auto runDijkstra(const cLocation& from, auto locationToIdx, auto nextLocations, 
         cLocation from;
         bool done = false;
     };
-    int fromIdx = locationToIdx(from);
     std::vector<cNode> nodes(numberOfLocations);
-    nodes[fromIdx] = { 0, from, from };
     std::vector<int> frontier;
-    frontier.emplace_back(fromIdx);
+    if constexpr (requires { from.begin(); from.end(); })
+    {
+        for(auto&& loc : from)
+        {
+            auto idx = locationToIdx(loc);
+            nodes[idx] = { 0, loc, loc };
+            frontier.emplace_back(idx);
+        }
+    }
+    else
+    {
+        int fromIdx = locationToIdx(from);
+        nodes[fromIdx] = { 0, from, from };
+        frontier.emplace_back(fromIdx);
+    }
 
     while (!frontier.empty())
     {
@@ -39,6 +51,7 @@ auto runDijkstra(const cLocation& from, auto locationToIdx, auto nextLocations, 
     }
     return nodes;
 }
+
 
 /////////////////////
 // tested example:
