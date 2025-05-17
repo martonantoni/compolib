@@ -18,6 +18,7 @@ auto runDijkstra(const auto& from, auto locationToIdx, auto nextLocations, size_
             nodes[idx] = { 0, loc, loc };
             frontier.emplace_back(idx);
         }
+		std::ranges::make_heap(frontier, [&](int a, int b) { return nodes[a].cost > nodes[b].cost; });
     }
     else
     {
