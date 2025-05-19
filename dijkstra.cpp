@@ -18,7 +18,7 @@ auto runDijkstra(const auto& from, auto locationToIdx, auto nextLocations, size_
             nodes[idx] = { 0, loc, loc };
             frontier.emplace_back(idx);
         }
-		std::ranges::make_heap(frontier, [&](int a, int b) { return nodes[a].cost > nodes[b].cost; });
+        std::ranges::make_heap(frontier, [&](int a, int b) { return nodes[a].cost > nodes[b].cost; });
     }
     else
     {
@@ -51,6 +51,20 @@ auto runDijkstra(const auto& from, auto locationToIdx, auto nextLocations, size_
         }
     }
     return nodes;
+}
+
+std::string reconstructPath(const auto& nodes, auto locationToIdx, int fromIdx, int toIdx, auto stepToString)
+{
+    std::string moves;
+    auto nodeIdx = toIdx;
+    while (nodeIdx != fromIdx)
+    {
+        auto& node = nodes[nodeIdx];
+        moves += stepToString(node.from, node.loc);
+        nodeIdx = locationToIdx(node.from);
+    }
+    std::ranges::reverse(moves);
+    return moves;
 }
 
 
