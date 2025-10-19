@@ -1,69 +1,68 @@
-const size_t pregen_p_s=1'000'001;
+const size_t max_prime_to_generate = 10'000'001;
 
-char is_not_prime[pregen_p_s]={ 0 };
+char is_not_prime[max_prime_to_generate] = { 0 };
 vector<ll> primes;
 
 vector<pair<ll, ll>> factorization; // prime, count
 
-// GCD  / LCM ---> gcd.cpp
-// LNKO / LKKT
-
-void CalcFactorization(ll x)
+void calcFactorization(ll x)
 {
     factorization.clear();
-    for (int i = 0; i < (int)primes.size() && x>1; ++i)
+    for (auto prime : primes)
     {
-        if (!is_not_prime[x])  // WARNING:  x must be <= pregen_p_s!
+        if (x < max_prime_to_generate && !is_not_prime[x])  // shortcut
         {
+            if (x <= 1)
+                return;
             factorization.emplace_back(x, 1);
             return;
         }
-    again:
-        if (x % primes[i] == 0)
+        if (x % prime == 0)
         {
-            if (!factorization.empty() && factorization.back().first == primes[i])
+            factorization.emplace_back(prime, 1);
+            x /= prime;
+            while (x % prime == 0)
+            {
                 ++factorization.back().second;
-            else
-                factorization.emplace_back(primes[i], 1);
-            x /= primes[i];
-            goto again;
+                x /= prime;
+            }
         }
     }
     if (x != 1)
         factorization.emplace_back(x, 1);
 }
 
-void InitPrimes()
-{	
-	primes.reserve(100'000);
-	for(int i=2; i<pregen_p_s; ++i)
-	{
-		if(!is_not_prime[i])
-		{
-			primes.push_back(i);
-			for(int j=i*2; j<pregen_p_s; j+=i)
-			{
-				is_not_prime[j]=1;
-			}
-		}
-	}
+void initPrimes()
+{
+    primes.reserve(100'000);
+    for (int i = 2; i < max_prime_to_generate; ++i)
+    {
+        if (!is_not_prime[i])
+        {
+            primes.push_back(i);
+            for (int j = i * 2; j < max_prime_to_generate; j += i)
+            {
+                is_not_prime[j] = 1;
+            }
+        }
+    }
 }
 
 vector<ll> divisors;
 
-void GenerateAllDivisors()      // Call CalcFactorization first!
-{                               // divisors are not ordered!
+void generateAllDivisors(const vector<pair<ll, ll>>& factors = ::factorization) // divisors are not ordered!
+{
     divisors.clear();
     divisors.emplace_back(1);
-    for (auto f : factorization)
+    for (auto&& [prime, count] : factors)
     {
-        int ds = divisors.size();
+        int ds = (int)divisors.size();
         FOR(j, ds)
         {
             ll d = divisors[j];
-            FOR(i, f.second)
+            FOR(i, count)
             {
-                d *= f.first;
+                d *= prime;
                 divisors.emplace_back(d);
             }
         }
