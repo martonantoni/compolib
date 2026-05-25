@@ -246,6 +246,55 @@ inline cImage<char> loadImageStdIn(int rows, int cols)
     return image;
 }
 
+inline cImage<char> loadImageFile(const char* path)
+{
+    cImage<char> image;
+
+    auto file = fopen(path, "rb");
+    if(!file)
+    {
+        print("Failed to open file: {}\n", path);
+        return image;
+    }
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    vector<char> fileData(fileSize);
+    if(fread(fileData.data(), 1, fileSize, file) != static_cast<size_t>(fileSize))
+    {
+        print("Failed to read file: {}\n", path);
+        fclose(file);
+        return image;
+    }
+    fclose(file);
+    auto newLineIt = rng::find(fileData, '\n');
+    if(newLineIt == fileData.end())
+    {
+        image.w = static_cast<int>(fileData.size());
+        image.h = 1;
+        image.cells = std::move(fileData);
+        return image;
+    }
+    if(newLineIt == fileData.begin())
+    {
+        print("Invalid file format: {}\n", path);
+        return image;
+    }
+    if(newLineIt[-1] == '\r')
+    {
+        --newLineIt;
+    }
+    image.w = static_cast<int>(newLineIt - fileData.begin());
+    image.h = static_cast<int>(rng::count(fileData, '\n'));
+    if(fileData.back() != '\n')
+    {
+        ++image.h;
+    }
+    fileData.erase(remove_if(fileData.begin(), fileData.end(), [](char c) { return c == '\r' || c == '\n'; }), fileData.end());
+    image.cells = std::move(fileData);
+    return image;
+}
+
 inline cImage<char> loadImageExtended(auto lines, char borderC)
 {
     cImage<char> image;

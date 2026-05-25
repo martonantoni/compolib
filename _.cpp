@@ -1,5 +1,4 @@
 #define _CRT_SECURE_NO_WARNINGS
-//#include <windows.h>
 #include <iostream>
 #include <stdio.h>
 #include <vector>
@@ -20,6 +19,11 @@
 #include <cstddef>
 #include <cinttypes>
 #include <regex>
+#include <ranges>
+#include <print>
+#include <bit>
+#include <fstream>
+#include <variant>
 
 #undef max
 #undef min
@@ -65,17 +69,22 @@ public:
 } perf_guard("main");
 
 using namespace std;
+
+namespace rng = std::ranges;
+namespace views = std::ranges::views;
 using namespace std::chrono;
 using namespace std::string_literals;
 using ull = unsigned long long;
 using ll = long long;
 #define RI(var_name) int var_name; scanf("%d", &var_name);
 #define RIV(var_name, size) vector<int> var_name(size); for(auto &item_of_##var_name: var_name) scanf("%d", &item_of_##var_name);
+#define RIV_IDX(var_name, size) vector<pair<int,int>> var_name(size); for(int i=0;i<size;++i) { scanf("%d", &var_name[i].first); var_name[i].second=i; }
 #define RII(var_name1, var_name2) int var_name1, var_name2; scanf("%d %d", &var_name1, &var_name2);
 #define RIII(var_name1, var_name2, var_name3) int var_name1, var_name2, var_name3; scanf("%d %d %d", &var_name1, &var_name2, &var_name3);
 #define RIIII(var_name1, var_name2, var_name3, var_name4) int var_name1, var_name2, var_name3, var_name4; scanf("%d %d %d %d", &var_name1, &var_name2, &var_name3, &var_name4);
 #define RL(var_name) ll var_name; scanf("%lld", &var_name);
 #define RLV(var_name, size) vector<ll> var_name(size); for(auto &item_of_##var_name: var_name) scanf("%lld", &item_of_##var_name);
+#define RLV_IDX(var_name, size) vector<pair<ll,int>> var_name(size); for(int i=0;i<size;++i) { scanf("%lld", &var_name[i].first); var_name[i].second=i; }
 #define RLUV(var_name, size) vector<ull> var_name(size); for(auto &item_of_##var_name: var_name) scanf("%llu", &item_of_##var_name);
 #define RLL(var_name1, var_name2) ll var_name1, var_name2; scanf("%lld %lld", &var_name1, &var_name2);
 #define RLLL(var_name1, var_name2, var_name3) ll var_name1, var_name2, var_name3; scanf("%lld %lld %lld", &var_name1, &var_name2, &var_name3);
@@ -88,35 +97,5 @@ using ll = long long;
 #define FOR(var, max_value) for(remove_reference<remove_const<decltype(max_value)>::type>::type var=0;var<max_value;++var)
 
 constexpr ll mod = 1'000'000'007;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Solve()
-{
-}
-
-
-int Init()
-{
-    // constexpr int t = 1;
-    RI(t);
-    return t;
-}
-
-int main()
-{
-    int t = Init();
-    for (int tc = 1; tc <= t; ++tc)
-    {
-        //       printf("Case #%d: ", tc);
-        Solve();
-
-        //         RI(verdict);
-        //         if (verdict == -1)
-        //             break;
-    }
-}
-
-
-
-
+//constexpr ull mod = 998244353;
+//        998244353

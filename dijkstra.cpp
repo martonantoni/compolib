@@ -9,28 +9,29 @@ auto runDijkstra(const auto& from, auto locationToIdx, auto nextLocations, size_
         bool done = false;
     };
     std::vector<cNode> nodes(numberOfLocations);
-    std::vector<int> frontier;
+    using cIndexType = decltype(locationToIdx(from));
+    std::vector<std::pair<ll, cIndexType>> frontier; // cost, index
     if constexpr (requires { from.begin(); from.end(); })
     {
-        for(auto&& loc : from)
+        for (auto&& loc : from)
         {
             auto idx = locationToIdx(loc);
             nodes[idx] = { 0, loc, loc };
-            frontier.emplace_back(idx);
+            frontier.emplace_back(0, idx);
         }
-        std::ranges::make_heap(frontier, [&](int a, int b) { return nodes[a].cost > nodes[b].cost; });
+        std::ranges::make_heap(frontier, std::greater{});
     }
     else
     {
-        int fromIdx = locationToIdx(from);
+        auto fromIdx = locationToIdx(from);
         nodes[fromIdx] = { 0, from, from };
-        frontier.emplace_back(fromIdx);
+        frontier.emplace_back(0, fromIdx);
     }
 
     while (!frontier.empty())
     {
-        auto checkedNodeIdx = frontier.front();
-        std::ranges::pop_heap(frontier, [&](int a, int b) { return nodes[a].cost > nodes[b].cost; });
+        auto [cost, checkedNodeIdx] = frontier.front();
+        std::ranges::pop_heap(frontier, std::greater{});
         frontier.pop_back();
         auto& checkedNode = nodes[checkedNodeIdx];
         if (checkedNode.done)
@@ -39,21 +40,21 @@ auto runDijkstra(const auto& from, auto locationToIdx, auto nextLocations, size_
         for (auto&& [nextLoc, moveCost] : nextLocations(checkedNode.loc))
         {
             auto nextIdx = locationToIdx(nextLoc);
-            auto nextCost = checkedNode.cost + moveCost;
+            auto nextCost = cost + moveCost;
             if (nextCost < nodes[nextIdx].cost)
             {
                 nodes[nextIdx].cost = nextCost;
                 nodes[nextIdx].from = checkedNode.loc;
                 nodes[nextIdx].loc = nextLoc;
-                frontier.emplace_back(nextIdx);
-                std::ranges::push_heap(frontier, [&](int a, int b) { return nodes[a].cost > nodes[b].cost; });
+                frontier.emplace_back(nextCost, nextIdx);
+                std::ranges::push_heap(frontier, std::greater{});
             }
         }
     }
     return nodes;
 }
 
-std::string reconstructPath(const auto& nodes, auto locationToIdx, int fromIdx, int toIdx, auto stepToString)
+std::string reconstructPath(const auto& nodes, auto locationToIdx, auto fromIdx, auto toIdx, auto stepToString)
 {
     std::string moves;
     auto nodeIdx = toIdx;
@@ -87,3 +88,62 @@ int findBest(cImage<char>& img, cPosition end_pos)
 
     return costs[img.w - 1 + (img.h - 1) * img.w].cost;
 }
+
+
+
+
+
+
+
+        ofstream out("dijkstra_result.txt");
+        for(int row = 0; row <archipelago.h;++row)
+        {
+            for (int col = 0; col < archipelago.w; ++col)
+            {
+                print(out, "+--------");
+            }
+            print(out, "\n");
+            for (int col = 0; col < archipelago.w; ++col)
+            {
+                print(out, "|        ");
+            }
+            print(out, "\n");
+
+
+
+
+            for(int col=0;col<archipelago.w;++col)
+            {
+                cPosition p{ row, col };
+                auto idx = posToIdx(p);
+                if(res[idx].cost == std::numeric_limits<ll>::max())
+                {
+                    print(out, "|    X   ");
+                }
+                else
+                {
+                    print(out, "| {:6} ", res[idx].cost >> shift);
+                }
+            }
+            print(out, "\n");
+            for (int col = 0; col < archipelago.w; ++col)
+            {
+                cPosition p{ row, col };
+                auto idx = posToIdx(p);
+                if (res[idx].cost == std::numeric_limits<ll>::max())
+                {
+                    print(out, "|        ");
+                }
+                else
+                {
+                    cPosition from = res[idx].from;
+                    cPosition diff = p - from;
+                    char c = '?';
+                    if (diff == direction_N) c = 'S';
+                    else if (diff == direction_S) c = 'N';
+                    else if (diff == direction_E) c = 'W';
+                    else if (diff == direction_W) c = 'E';
+                    print(out, "|   {}    ", c);
+                }
+            }
+            print(out, "\n");
